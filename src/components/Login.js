@@ -8,17 +8,17 @@ const Login = () => {
   return (
     <div className='grid grid-col-2'>
       <div className='bg-[#1d9bf0] h-screen grid place-items-center'>
-        <BsTwitter className='text-white text-[200px]'/> 
+        <BsTwitter className='text-white text-[200px]'/>
       </div>
 
       <div className='grid place-items-center'>
-        <div 
+        <div
           className='flex gap-4 bg-white p-4 px-6 items-center rounded [6px] cursor-pointer'
           onClick={() => signIn('google')}
         >
           <FcGoogle className='text-[30px]'/>
           Sign In with Google
-        </div>  
+        </div>
       </div>
     </div>
   )
