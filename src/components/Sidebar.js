@@ -33,7 +33,7 @@ const Sidebar = () => {
           <h4 className='font-bold'>{session?.user?.name}</h4>
           <h4 className='text-[#6e767d]'>@{session?.user?.tag}</h4>
         </div>
-      <BsThreeDots classname='h-5 hidden xl:inline ml-10'/>
+      <BsThreeDots className='h-5 hidden xl:inline ml-10'/>
       </div>
     </div>
   )

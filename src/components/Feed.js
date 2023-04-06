@@ -14,13 +14,13 @@ const Feed = () => {
         setPosts(snapshot.docs)
       }, [db]
     )
-  )
+  , [])
 
-  console.log('testing feed object')
+  console.log(posts)
 
   return (
-    <div className='sm:ml-[80px] xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
-      <div className='sticky top-0 bg-black flex justify-between font-medium text-[20px] px-4 py-2'>
+    <div className='sm:ml-20 xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
+      <div className='sticky top-0 bg-black flex justify-between font-medium text-xl px-4 py-2'>
         Home
         <HiOutlineSparkles/>
       </div>
