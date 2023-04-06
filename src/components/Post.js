@@ -72,7 +72,7 @@ const Post = ({ id, post }) => {
     console.log(post)
 
   return (
-    <div className='mt-4 border-t border-gray-500 px-4 pt-6 pb-4 cursor-pointer' onClick={() => router.push(`/${id}`)}>
+    <div className='mt-4 border-t border-gray-500 px-4 pt-6 pb-4 cursor-pointer' onClick={() => router.push(`/post/${id}`)}>
       <div className='grid grid-cols-[48px,1fr] gap-4'>
         <div>
           <img className='h-12 w-12 rounded-full object-cover' src={post?.userImg} alt="" />
@@ -96,7 +96,7 @@ const Post = ({ id, post }) => {
           <div className='flex justify-between text-[20px] mt-2 w-[80%]'>
             <div className='flex gap-1 items-center'>
               <BsChat className='hoverEffect w-7 h-7 p-1' onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
                 openModal()
               }} />
               {comments.length > 0 && (<span className='text-sm'>{comments.length}</span>)}

@@ -3,9 +3,15 @@ import Head from 'next/head'
 import Login from '../components/Login'
 import Sidebar from '../components/Sidebar'
 import Feed from '../components/Feed'
+import { AppContext } from '@/contexts/AppContext'
+import { useContext } from 'react'
+import Modal from '../components/Modal'
+import Trending from '../components/Trending'
 
 export default function Home() {
   const {data: session} = useSession()
+  
+  const [appContext] = useContext(AppContext)
   if(!session) return <Login />
 
   return (
@@ -20,6 +26,12 @@ export default function Home() {
         <Sidebar/>
         <div className='flex gap-6'>
           <Feed/>
+          
+          <Trending />
+          {appContext?.isModalOpen && <Modal />}
+          {
+            appContext?.isModalOpen && <Modal />
+          }
         </div>
       </main>
     </div>
