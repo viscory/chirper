@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { onSnapshot, collection, query, orderBy } from 'firebase/firestore'
 import { HiOutlineSparkles } from 'react-icons/hi'
-
+import Post from './Post'
 import { db } from '../firebase'
 import Input from './Input'
 
@@ -14,17 +14,22 @@ const Feed = () => {
         setPosts(snapshot.docs)
       }, [db]
     )
-  )
-
-  console.log('testing feed object')
+  , [])
 
   return (
-    <div className='sm:ml-[80px] xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
-      <div className='sticky top-0 bg-black flex justify-between font-medium text-[20px] px-4 py-2'>
+    <div className='sm:ml-20 xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
+      <div className='sticky top-0 bg-black flex justify-between font-medium text-xl px-4 py-2'>
         Home
         <HiOutlineSparkles/>
       </div>
       <Input className=''/>
+      {
+        posts.map((post) => {
+          return(
+            <Post key={post.id} post={post.data()} id={post.id} />
+          )
+        })
+      }
     </div>
   )
 }
