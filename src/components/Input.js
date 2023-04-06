@@ -42,7 +42,6 @@ const sendPost = async () => {
         return
 
     setLoading(true)
-    console.log(session)
     const docRef = await addDoc(collection(db, 'posts'), {
         id: session.user.uid,
         username: session.user.name,
