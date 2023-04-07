@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('./Input.css');
-@import url('./Login.css');
-@import url('./Post.css');
+@import url('./common.css');
+@import url('./feedpage.css');
+@import url('./login.css');
 
 @layer base {
   body{

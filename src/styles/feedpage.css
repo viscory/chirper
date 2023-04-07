@@ -19,5 +19,22 @@
 }
 
 .post_action_button {
-    @apply cursor-pointer
+    @apply cursor-pointer flex
 }
+
+.comment_container {
+    @apply p-3 flex cursor-pointer border-b border-gray-700;
+}
+
+.comment_avatar {
+    @apply h-11 w-11 rounded-full mr-4;
+}
+
+.comment_owner {
+    @apply font-bold text-[#d9d9d9] text-[15px] sm:text-base inline-block group-hover:underline;
+}
+
+.comment_content {
+    @apply text-[#d9d9d9] mt-0.5 max-w-lg text-[15px] sm:text-base;
+}
+

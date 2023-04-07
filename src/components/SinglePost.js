@@ -23,7 +23,7 @@ const SinglePost = () => {
                 ),
                 (snapshot) => setComments(snapshot.docs)
             ),
-        [db, id]
+        []
     )
 
     useEffect(
@@ -31,7 +31,7 @@ const SinglePost = () => {
             onSnapshot(doc(db, "posts", id), (snapshot) => {
                 setPost(snapshot.data());
             }),
-        [db]
+        []
     )
 
     return (
