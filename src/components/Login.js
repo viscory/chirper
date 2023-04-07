@@ -13,16 +13,16 @@ const Login = () => {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
     </Head>
     <div className='grid grid-col-2'>
-      <div className='bg-[#1d9bf0] h-screen grid place-items-center relative'>
+      <div className='login_background'>
         <BsTwitter className='text-white text-[200px]'/>
       </div>
 
-      <div className='absolute bottom-20 mx-auto left-0 right-0 w-64 lg:w-80'>
+      <div className='google_sign_in_button'>
         <div
-          className='flex gap-4 bg-white py-4 px-6 items-center rounded-lg cursor-pointer'
+          className='login_button_text'
           onClick={() => signIn('google')}
         >
-          <FcGoogle className='text-4xl'/>
+          <FcGoogle className='login_button_icon'/>
           Sign In with Google
         </div>
       </div>

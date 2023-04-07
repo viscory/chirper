@@ -1,0 +1,15 @@
+.login_background {
+    @apply bg-[#1d9bf0] h-screen grid place-items-center relative;
+}
+
+.google_sign_in_button {
+    @apply absolute bottom-20 mx-auto left-0 right-0 w-fit cursor-pointer bg-white py-4 px-6 items-center rounded-lg m-auto;
+}
+
+.login_button_text {
+    @apply text-xl flex;
+}
+
+.login_button_icon {
+    @apply w-8 h-8 mr-4;
+}

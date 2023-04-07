@@ -1,0 +1,3 @@
+.post_textarea {
+    @apply w-full bg-transparent outline-none text-xl h-20;
+}

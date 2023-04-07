@@ -75,8 +75,7 @@ const sendPost = async () => {
       </div>
       <div className='w-[90%]'>
         <textarea
-          className='w-full bg-transparent outline-none text-[20px]'
-          rows='2'
+          className='post_textarea'
           placeholder="What's happening?"
           value={input}
           onChange={(e) => setInput(e.target.value)}/>
@@ -99,13 +98,13 @@ const sendPost = async () => {
               <label htmlFor="file">
                   <BsImage className='cursor-pointer' />
               </label>
-              <input id="file" type="file"
+              <input 
+                  id="file" 
+                  type="file"
+                  accept="image/*"
                   hidden
                   onChange={addImageToPost}
               />
-              <div className='border-[#1d9bf0] border rounded h-[18px] text-[16px] grid place-items-center'>
-                  <AiOutlineGif />
-              </div>
               <RiBarChart2Line className='rotate-90' />
               <BsEmojiSmile className='cursor-pointer' onClick={() => setShowEmojis(!showEmojis)} />
               <IoCalendarNumberOutline />
