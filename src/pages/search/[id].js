@@ -1,13 +1,11 @@
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
-import Login from '@/components/Login'
-import Feed from '@/components/Chirps/Feed'
 import { AppContext } from '@/contexts/AppContext'
 import { useContext, useEffect, useState } from 'react'
 import Modal from '@/components/Common/Modal'
 import Sidebar from '@/components/Common/Sidebar'
 import Trending from '@/components/Common/Trending'
-import { onSnapshot, collection, query, orderBy, where, addDoc ,documentId, deleteDoc, setDoc, doc } from 'firebase/firestore'
+import { onSnapshot, collection, query, orderBy, where, addDoc ,documentId, deleteDoc, setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
 import { db, firebase } from '@/firebase'
 
 export default function UserSearch() {
@@ -15,38 +13,46 @@ export default function UserSearch() {
     const [result, setResult] = useState([])
     const [following, setFollowing] = useState([])
     const [appContext] = useContext(AppContext)
+    const [userId, setUserId] = useState("")
     useEffect(() => {
-        console.log(window.location.pathname.split("/")[2])
-        console.log("hahayou’redead")
-        onSnapshot(
-            query(collection(db, `users`), where("tag", "==", window.location.pathname.split("/")[2])),
-            (snapshot) => {
-                let res = snapshot.docs.map((data) => data.data())
-                setResult(res)
-                onSnapshot(
-                    query(collection(db, `users/${localStorage.getItem("userId")}`, "following")),
-                    (snapshot) => {
-                        let following = snapshot.docs.map((data) => data.data())
-                        for(let i in snapshot.docs){
-                            following[i].objectId = snapshot.docs[i].id
-                        }
-                        console.log(following)
-                        setFollowing(following)
-                    }
-                )
-            }
-        )
-    }, [])
+        if (typeof window !== "undefined") {
+
+          setUserId(localStorage.getItem("userId"))
+        
+        }
+        if(userId){
+          onSnapshot(
+              query(collection(db, `users`), where("tag", "==", window.location.pathname.split("/")[2])),
+              (snapshot) => {
+                  let res = snapshot.docs.map((data) => data.data())
+                  for(let i in res){
+                    res[i].objectId = snapshot.docs[i].id
+                  }
+                  setResult(res)
+                  onSnapshot(
+                      query(collection(db, `users`), where(documentId(), "==", userId)),
+                      (snapshot) => {
+                          let following = snapshot.docs[0].data().following
+                          console.log(following)
+                          setFollowing(following)
+                      }
+                  )
+              }
+          )
+
+        }
+    }, [userId])
     
 
     useEffect(() => {
-        console.log(result)
-        console.log(following)
     }, [result, following])
 
     const followUser = async (account) => {
-        const res = await addDoc(collection(db, `users/${localStorage.getItem("userId")}`, "following"), account)
-        setFollowing([...following, {...account, objectId: res.id}])
+      console.log(account)
+      await updateDoc(doc(db, "users", userId), {
+        following: [...following, account.objectId]
+      })
+      setFollowing([...following, account.objectId])
     }
 
     const unfollowUser = async (account) => {
@@ -67,7 +73,7 @@ export default function UserSearch() {
           <div className='flex gap-6'>
             <div className='sm:ml-20 xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white p-2'>
               {
-                result.map((account => {
+                result.map(((account, index) => {
                     return(
                         <div className="border-b-2 border-white py-3 flex">
                             <img src={account.userImg} className="rounded-full w-7 h-7 mr-4 my-auto" />
@@ -76,8 +82,8 @@ export default function UserSearch() {
                             {
                                 account.tag !== session.user.tag
                                 ?following.some((item)=> item.tag === account.tag)
-                                ?(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400" onClick={()=>unfollowUser(account)}>Unfollow</div>)
-                                :(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400" onClick={()=>followUser(account)}>Follow</div>):null
+                                ?(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400" onClick={()=>unfollowUser(account, index)}>Unfollow</div>)
+                                :(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400" onClick={()=>followUser(account, index)}>Follow</div>):null
                             }
                             
                         </div>

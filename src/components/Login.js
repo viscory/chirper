@@ -6,7 +6,7 @@ import { FcGoogle } from 'react-icons/fc'
 
 const Login = () => {
   const googleSignin = () => {
-    signIn('google')
+    signIn('google', {callbackUrl: '/'});
   }
   return (
     <>

@@ -2,50 +2,48 @@ import React, { useEffect, useState } from 'react'
 import { BsArrowLeft } from "react-icons/bs"
 import Input from '../Common/Input'
 import Post from './Post'
-import { onSnapshot, collection, query, orderBy, doc } from "firebase/firestore";
+import { onSnapshot, collection, query, orderBy, doc, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useRouter } from 'next/router';
 import Comment from './Comment';
 
 const SinglePost = () => {
 
-    const [post, setPost] = useState([])
+    const [post, setPost] = useState(null)
     const router = useRouter()
-    const { id } = router.query;
     const [comments, setComments] = useState([])
 
     useEffect(
-        () =>
-            onSnapshot(
-                query(
-                    collection(db, "users/${session.user.uid}/posts", id, "comments"),
-                    orderBy("timestamp", "desc")
-                ),
-                (snapshot) => setComments(snapshot.docs)
-            ),
-        []
-    )
+        () =>{
+            if(window !== "undefined"){
+                onSnapshot(query(collection(db, `users`), where("userId", "==", window.location.pathname.split('/')[2])), 
+                    (snapshot) => {
+                        setPost(snapshot.docs[0].data().posts.filter(post => post.id === window.location.pathname.split('/')[4])[0])
+                        setComments(snapshot.docs[0].data().comments)
+                    }
+                )  
+            }
+        []}
+    , [])
 
-    useEffect(
-        () =>
-            onSnapshot(doc(db, "users/${session.user.uid}/posts", id), (snapshot) => {
-                setPost(snapshot.data());
-            }),
-        []
-    )
-    console.log(post)
-
+    useEffect(() => {
+        console.log(comments)
+        console.log(post)
+    }, [comments, post])
     return (
         <section className='w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
             <div className='sticky top-0 bg-black flex items-center gap-4 font-medium text-[20px] px-4 py-2'>
                 <BsArrowLeft className='cursor-pointer' onClick={() => router.push(`/`)} />
                 Twitter
             </div>
+            {
+                post?<Post post={post} />:null
 
-            <Post id={id} post={post} />
+            }
+            
 
             <div className='border-t border-gray-700'>
-                {comments.length > 0 && (
+                {comments && comments.length > 0 && (
                     <div className="pb-72">
                         {comments.map((comment) => (
                             <Comment

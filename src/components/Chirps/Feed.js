@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { onSnapshot, collection, query, orderBy, where, addDoc } from 'firebase/firestore'
+import { onSnapshot, collection, query, orderBy, where, addDoc, updateDoc, doc, arrayUnion,  documentId } from 'firebase/firestore'
 import { HiOutlineSparkles } from 'react-icons/hi'
 import Post from './Post'
 import { db } from '@/firebase'
@@ -12,26 +12,47 @@ const Feed = () => {
   const { data: session } = useSession()
   const [appContext, setAppContext] = useContext(AppContext)
   const [addNewUser, setAddNewUser] = useState(true)
+  const [user, setUser] = useState(null)
   useEffect(() => {
-    onSnapshot(
-      query(
-        collection(db, `users`), where("tag", "==", session?.user?.tag)
-      ),
-      (snapshot) => {
-        if(snapshot.docs.length == 0) {
-          setAddNewUser(false);
+    if(session){
+      onSnapshot(
+        query(
+          collection(db, `users`), where("tag", "==", session?.user?.tag)
+        ),
+        (snapshot) => {
+          if(snapshot.docs.length == 0) {
+            setAddNewUser(false);
+          }
+          else{
+            const id = snapshot.docs[0].id
+            localStorage.setItem('userId', snapshot.docs[0].id)
+            setAppContext({
+              userId: id,
+              username: session.user.name,
+              userImg: session.user.image,
+              tag: session.user.tag
+            })
+            setUser(snapshot.docs[0].data())
+            
+            const followingList = snapshot.docs[0].data().following
+            if(followingList.length > 0){
+              onSnapshot(
+                query(collection(db, 'users'), where(documentId(), "in", followingList)),
+                (snapshot) => {
+                  const chirps = []
+                  const data = snapshot.docs
+                  for(let i in data){
+                    chirps.push(...data[i].data().posts)
+                  }
+                  chirps.sort((a, b) => b.timestamp-a.timestamp)
+                  setPosts(chirps)
+                }
+              )
+            }
+          }
         }
-        else{
-          const id = snapshot.docs[0].id
-          setAppContext({
-            userId: id,
-            username: session.user.name,
-            userImg: session.user.image,
-            tag: session.user.tag
-          })
-        }
-      }
-    )
+      )
+    }
   }, [])
 
 
@@ -39,16 +60,26 @@ const Feed = () => {
     const docRef = await addDoc(collection(db, `users`), {
       username: session.user.name,
       userImg: session.user.image,
-      tag: session.user.tag
+      tag: session.user.tag,
+      following: [],
+      posts: []
     })
     localStorage.setItem("userId", docRef.id)
+    await updateDoc(doc(db, "users", docRef.id), {
+      following: arrayUnion(
+        docRef.id
+      ),
+      userId: docRef.id
+    })
     setAppContext({
       ...appContext, 
       user: {
         userId: docRef.id,
         username: session.user.name,
         userImg: session.user.image,
-        tag: session.user.tag
+        tag: session.user.tag,
+        following: [],
+        posts: []
       }
     })
     setAddNewUser(true);
@@ -71,10 +102,10 @@ const Feed = () => {
         )
         :(
           <>
-          <Input className=''/>
+          <Input className='' user={user} />
           {posts.map((post) => {
           return(
-            <Post key={post.id} post={post.data()} id={post.id} />
+            <Post key={post.id} post={post} id={post.id} />
           )
         })}
         </>

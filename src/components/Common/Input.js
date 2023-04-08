@@ -6,21 +6,21 @@ import { IoCalendarNumberOutline } from "react-icons/io5"
 import { HiOutlineLocationMarker } from "react-icons/hi"
 import { useSession } from 'next-auth/react'
 import { AppContext } from '@/contexts/AppContext'
-
+import { nanoid } from 'nanoid'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
-import { addDoc, collection, doc, serverTimestamp, updateDoc, setDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, serverTimestamp, updateDoc, setDoc, arrayUnion } from 'firebase/firestore'
 import { db, storage } from '../../firebase'
 import { getDownloadURL, ref, uploadString } from 'firebase/storage'
 
-const Input = () => {
+const Input = ({user}) => {
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
   const [selectedFile, setSelectedFile] = useState(null)
   const [showEmojis, setShowEmojis] = useState(false)
   const { data: session } = useSession()
   const [appContext, setAppContext] = useContext(AppContext)
-
+  const userId = localStorage.getItem('userId')
   const addImageToPost = (e) => {
     const reader = new FileReader()
     if (e.target.files[0]) {
@@ -43,26 +43,47 @@ const sendPost = async () => {
     if (loading)
         return
     setLoading(true)
-    const docRef = await addDoc(collection(db, `users/${appContext.userId}/posts`), {
-        id: appContext.userId,
-        username: session.user.name,
-        userImg: session.user.image,
-        tag: session.user.tag,
-        text: input,
-        timestamp: serverTimestamp(),
-    })
-
-    const imageRef = ref(storage, `users/${appContext.userId}/posts/${docRef.id}/image`)
-
+    const postId = nanoid(20)
+    const imageRef = ref(storage, `users/${userId}/posts/${postId}/image`)
     if (selectedFile) {
         await uploadString(imageRef, selectedFile, "data_url")
         .then(async () => {
             const downloadURL = await getDownloadURL(imageRef);
-            await updateDoc(doc(db, `users/${appContext.userId}/posts`, docRef.id), {
-                image: downloadURL,
+            await updateDoc(doc(db, `users`, userId), {
+              posts: arrayUnion(
+                {
+                  id: postId,
+                  username: session.user.name,
+                  userImg: session.user.image,
+                  userId: userId,
+                  tag: session.user.tag,
+                  text: input,
+                  image: downloadURL,
+                  timestamp: new Date(),
+                }
+              )
             })
         })
     }
+    else{
+      await updateDoc(doc(db, "users", userId), {
+        posts: arrayUnion(
+          {
+            id: postId,
+            username: session.user.name,
+            userImg: session.user.image,
+            userId: userId,
+            tag: session.user.tag,
+            text: input,
+            timestamp: new Date(),
+            comments: [],
+            likes: [],
+            dislikes: []
+          }
+        )
+      })
+    }
+
     setLoading(false)
     setInput("")
     setSelectedFile(null)

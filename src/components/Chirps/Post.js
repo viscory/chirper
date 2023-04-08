@@ -22,35 +22,35 @@ const Post = ({ id, post }) => {
 
   const { data: session } = useSession()
   const router = useRouter()
-
+  console.log(post)
   const [appContext, setAppContext] = useContext(AppContext)
 
-  useEffect(
-    () =>
-      onSnapshot(
+  useEffect(() => {
+      if(window !== "undefined"){
+        onSnapshot(
         query(
-          collection(db, `users/${session.user.uid}/posts`, id, "comments"),
+          collection(db, `users/${post.userId}/posts`, post.id, "comments"),
           orderBy("timestamp", "desc")
         ),
         (snapshot) => {
           setComments(snapshot.docs)
-          onSnapshot(collection(db, `users/${session.user.uid}/posts`, id, "likes"), (snapshot) => {
+          onSnapshot(collection(db, `users/${post.userId}/posts`, post.id, "likes"), (snapshot) => {
                 const data = snapshot.docs
                 setLikes(data)
                 setLiked(
-                    data.findIndex((like) => like.id === session?.user?.uid) !== -1
+                    data.findIndex((like) => like.id === post.userId) !== -1
                 )
-                onSnapshot(collection(db, `users/${session.user.uid}/posts`, id, "dislikes"), (snapshot) => {
+                onSnapshot(collection(db, `users/${post.userId}/posts`, post.id, "dislikes"), (snapshot) => {
                       const data = snapshot.docs
                       setDislikes(data)
                       setDisliked(
-                          data.findIndex((dislike) => dislike.id === session?.user?.uid) !== -1
+                          data.findIndex((dislike) => dislike.id === post.userId) !== -1
                       )
                   })
                 })
             
         }
-      ),
+      )}}, 
     // [db, id]
     []
   )
@@ -58,33 +58,33 @@ const Post = ({ id, post }) => {
   const likePost = async () => {
     if (liked) {
         setLiked(false);
-        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "likes", session.user.uid));
+        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "likes", post.userId));
     } 
     else {
         setLiked(true)
-        await setDoc(doc(db, `users/${session.user.uid}/posts`, id, "likes", session.user.uid), {
+        await setDoc(doc(db, `users/${post.userId}/posts`, post.id, "likes", post.userId), {
             username: session.user.name,
         });
     }
     if (disliked) {
         setDisliked(false)
-        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "dislikes", session.user.uid));
+        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "dislikes", post.userId));
     }
   }
   const dislikePost = async () => {
     if (disliked) {
         setDisliked(false)
-        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "dislikes", session.user.uid));
+        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "dislikes", post.userId));
     } 
     else {
         setDisliked(true)
-        await setDoc(doc(db, `users/${session.user.uid}/posts`, id, "dislikes", session.user.uid), {
+        await setDoc(doc(db, `users/${post.userId}/posts`, post.id, "dislikes", post.userId), {
             username: session.user.name,
         });
     }
     if (liked) {
         setLiked(false)
-        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "likes", session.user.uid));
+        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "likes", userId));
     }
   }
 
@@ -93,13 +93,13 @@ const Post = ({ id, post }) => {
       ...appContext, 
       isModalOpen: true,
       post,
-      postId: id
+      postId: post.id
     })
 
   }
 
   return (
-    <div className='post_container' onClick={() => router.push(`/post/${id}`)}>
+    <div className='post_container' onClick={() => router.push(`/users/${post.userId}/chirps/${post.id}`)}>
       <div className='post_margin'>
         <div>
           <img className='post_avatar' src={post?.userImg} alt="" />
@@ -132,7 +132,7 @@ const Post = ({ id, post }) => {
             </div>
               
             <div className='flex gap-1 items-center'>
-            {session.user.uid !== post?.id ? (
+            {post.userId !== post?.userId ? (
                 <div className='post_action_button'>
                     <FaRetweet className='w-5 h-5' />
                 </div>
