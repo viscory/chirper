@@ -1,14 +1,10 @@
 import React, { useContext } from 'react'
 import { getSession, useSession } from 'next-auth/react'
-import Login from '../../components/Login'
-import Sidebar from '../../components/Sidebar'
+import Login from '@/components/Login'
+import Sidebar from '@/components/Common/Sidebar'
 import Head from 'next/head'
-import Trending from '../../components/Trending'
-import SinglePost from '../../components/SinglePost'
-import Comment from "../../components/Comment"
-import { useRouter } from 'next/router'
-import { AppContext } from '../../contexts/AppContext'
-import Modal from '../../components/Modal'
+import SinglePost from '@/components/Chirps/SinglePost'
+import { AppContext } from '@/contexts/AppContext'
 
 const PostPage = () => {
 
@@ -25,12 +21,7 @@ const PostPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className='relative max-w-[1400px] mx-auto'>
-        <Sidebar />
-        <div className='flex gap-6'>
           <SinglePost />
-        </div>
-      </main>
 
     </div>
   )

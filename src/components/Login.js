@@ -5,6 +5,9 @@ import { BsTwitter } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
 
 const Login = () => {
+  const googleSignin = () => {
+    signIn('google')
+  }
   return (
     <>
     <Head>
@@ -20,7 +23,7 @@ const Login = () => {
       <div className='google_sign_in_button'>
         <div
           className='login_button_text'
-          onClick={() => signIn('google')}
+          onClick={() => googleSignin()}
         >
           <FcGoogle className='login_button_icon'/>
           Sign In with Google

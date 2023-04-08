@@ -5,11 +5,11 @@ import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from 'reac
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import Moment from 'react-moment'
 
-import { db } from "../firebase"
+import { db } from "@/firebase"
 import { useRouter } from 'next/router'
 import { collection, deleteDoc, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore'
 import { useSession } from "next-auth/react"
-import { AppContext } from '../contexts/AppContext'
+import { AppContext } from '@/contexts/AppContext'
 
 
 const Post = ({ id, post }) => {
@@ -29,64 +29,62 @@ const Post = ({ id, post }) => {
     () =>
       onSnapshot(
         query(
-          collection(db, "posts", id, "comments"),
+          collection(db, `users/${session.user.uid}/posts`, id, "comments"),
           orderBy("timestamp", "desc")
         ),
-        (snapshot) => setComments(snapshot.docs)
+        (snapshot) => {
+          setComments(snapshot.docs)
+          onSnapshot(collection(db, `users/${session.user.uid}/posts`, id, "likes"), (snapshot) => {
+                const data = snapshot.docs
+                setLikes(data)
+                setLiked(
+                    data.findIndex((like) => like.id === session?.user?.uid) !== -1
+                )
+                onSnapshot(collection(db, `users/${session.user.uid}/posts`, id, "dislikes"), (snapshot) => {
+                      const data = snapshot.docs
+                      setDislikes(data)
+                      setDisliked(
+                          data.findIndex((dislike) => dislike.id === session?.user?.uid) !== -1
+                      )
+                  })
+                })
+            
+        }
       ),
     // [db, id]
     []
   )
-
-  useEffect(() =>{
-    onSnapshot(collection(db, "posts", id, "likes"), (snapshot) => {
-        const data = snapshot.docs
-        setLikes(data)
-        setLiked(
-            data.findIndex((like) => like.id === session?.user?.uid) !== -1
-        )
-        })
-    onSnapshot(collection(db, "posts", id, "dislikes"), (snapshot) => {
-        const data = snapshot.docs
-        setDislikes(data)
-        setDisliked(
-            data.findIndex((dislike) => dislike.id === session?.user?.uid) !== -1
-        )
-    })
-    // [db, id]
-    , []}
-  )
-
+  
   const likePost = async () => {
     if (liked) {
         setLiked(false);
-        await deleteDoc(doc(db, "posts", id, "likes", session.user.uid));
+        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "likes", session.user.uid));
     } 
     else {
         setLiked(true)
-        await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
+        await setDoc(doc(db, `users/${session.user.uid}/posts`, id, "likes", session.user.uid), {
             username: session.user.name,
         });
     }
     if (disliked) {
         setDisliked(false)
-        await deleteDoc(doc(db, "posts", id, "dislikes", session.user.uid));
+        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "dislikes", session.user.uid));
     }
   }
   const dislikePost = async () => {
     if (disliked) {
         setDisliked(false)
-        await deleteDoc(doc(db, "posts", id, "dislikes", session.user.uid));
+        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "dislikes", session.user.uid));
     } 
     else {
         setDisliked(true)
-        await setDoc(doc(db, "posts", id, "dislikes", session.user.uid), {
+        await setDoc(doc(db, `users/${session.user.uid}/posts`, id, "dislikes", session.user.uid), {
             username: session.user.name,
         });
     }
     if (liked) {
         setLiked(false)
-        await deleteDoc(doc(db, "posts", id, "likes", session.user.uid));
+        await deleteDoc(doc(db, `users/${session.user.uid}/posts`, id, "likes", session.user.uid));
     }
   }
 
@@ -98,7 +96,6 @@ const Post = ({ id, post }) => {
       postId: id
     })
 
-    console.log('opening model ', appContext.post);
   }
 
   return (

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { BsArrowLeft } from "react-icons/bs"
-import Input from './Input'
+import Input from '../Common/Input'
 import Post from './Post'
 import { onSnapshot, collection, query, orderBy, doc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { useRouter } from 'next/router';
 import Comment from './Comment';
 
@@ -18,7 +18,7 @@ const SinglePost = () => {
         () =>
             onSnapshot(
                 query(
-                    collection(db, "posts", id, "comments"),
+                    collection(db, "users/${session.user.uid}/posts", id, "comments"),
                     orderBy("timestamp", "desc")
                 ),
                 (snapshot) => setComments(snapshot.docs)
@@ -28,14 +28,15 @@ const SinglePost = () => {
 
     useEffect(
         () =>
-            onSnapshot(doc(db, "posts", id), (snapshot) => {
+            onSnapshot(doc(db, "users/${session.user.uid}/posts", id), (snapshot) => {
                 setPost(snapshot.data());
             }),
         []
     )
+    console.log(post)
 
     return (
-        <section className='sm:ml-[81px] xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
+        <section className='w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
             <div className='sticky top-0 bg-black flex items-center gap-4 font-medium text-[20px] px-4 py-2'>
                 <BsArrowLeft className='cursor-pointer' onClick={() => router.push(`/`)} />
                 Twitter

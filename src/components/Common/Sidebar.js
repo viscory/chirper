@@ -24,16 +24,16 @@ const Sidebar = () => {
         <SidebarLink text='Profile' Icon={AiOutlineUser}/>
         <SidebarLink text='More' Icon={HiOutlineDotsCircleHorizontal}/>
       </div>
-      <button className='hidden xl:inline ml-auto bg-[#1d9bf0] text-white rounded-full w-52 h-[52px] text-lg font-bold hover:bg-[#1a8cd8]'>
+      {/* <button className='hidden xl:inline ml-auto bg-[#1d9bf0] text-white rounded-full w-52 h-[52px] text-lg font-bold hover:bg-[#1a8cd8]'>
         Tweet
-      </button>
-      <div className='text-[#d9d9d9] flex items-center justify-center mt-auto hoverEffect xl:ml-auto xl:-mr-5 px-4 py-2' onClick={signOut}>
+      </button> */}
+      <div className='text-[#d9d9d9] flex items-center justify-center mt-auto hoverEffect xl:ml-auto xl:-mr-5 px-4 py-2' onClick={()=>signOut({callbackUrl: '/'})}>
         <img src={session?.user.image} alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
         <div className='hidden xl:inline leading-5'>
           <h4 className='font-bold'>{session?.user?.name}</h4>
           <h4 className='text-[#6e767d]'>@{session?.user?.tag}</h4>
         </div>
-      <BsThreeDots className='h-5 hidden xl:inline ml-10'/>
+        <BsThreeDots className='h-5 hidden xl:inline ml-10'/>
       </div>
     </div>
   )
