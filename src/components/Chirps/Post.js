@@ -28,13 +28,15 @@ const Post = ({ post}) => {
     setLikes(post.likes)
     setDisliked(post.dislikes.includes(userId))
     setDislikes(post.dislikes)
-    onSnapshot(query(
-      collection(db, "posts", post.id, "replies")),
-      (snapshot) => {
-        const replies = snapshot.docs.map((doc) => doc.data())
-        setComments(replies)
-      }
-    )
+    if(post.id){
+      onSnapshot(query(
+        collection(db, "posts", post.id, "replies")),
+        (snapshot) => {
+          const replies = snapshot.docs.map((doc) => doc.data())
+          setComments(replies)
+        }
+      )
+    }
   }, [])
 
   
@@ -123,7 +125,7 @@ const Post = ({ post}) => {
             </div>
               
             <div className='flex gap-1 items-center'>
-            {post.userId !== post?.userId ? (
+            {post.userId !== userId ? (
                 <div className='post_action_button'>
                     <FaRetweet className='w-5 h-5' />
                 </div>

@@ -22,6 +22,7 @@ const Feed = () => {
         (snapshot) => {
           if(snapshot.docs.length > 0) {
             setUser(snapshot.docs[0].data())
+            localStorage.setItem("userId", snapshot.docs[0].data().userId)
             const followingList = snapshot.docs[0].data().following
             console.log(followingList)
             if(followingList !== undefined) {
@@ -87,9 +88,7 @@ const Feed = () => {
       }
     );
     update();
-    
   }
-
   return (
     <>
       

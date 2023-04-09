@@ -78,7 +78,9 @@ export default function UserSearch() {
                             <div className="text-lg mr-4 my-auto">{account.username}</div>
                             <div className="text-lg my-auto">@{account.tag}</div>
                             {
-                                following.includes(account.userId)
+                                account.userId === userId
+                                ?(null)
+                                :following.includes(account.userId)
                                 ?(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>unfollowUser(account)}>Unfollow</div>)
                                 :(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>followUser(account)}>Follow</div>)
                             }
