@@ -11,7 +11,7 @@ const Feed = () => {
   const [posts, setPosts] = useState([])
   const { data: session } = useSession()
   const [appContext, setAppContext] = useContext(AppContext)
-  const [addNewUser, setAddNewUser] = useState(true)
+  const [addNewUser, setAddNewUser] = useState(false)
   const [user, setUser] = useState(null)
   useEffect(() => {
     if(session){
@@ -20,22 +20,22 @@ const Feed = () => {
           collection(db, `users`), where("tag", "==", session?.user?.tag)
         ),
         (snapshot) => {
-          if(snapshot.docs.length == 0) {
-            setAddNewUser(false);
-          }
-          else{
-            setAddNewUser(true)
+          if(snapshot.docs.length > 0) {
             setUser(snapshot.docs[0].data())
             const followingList = snapshot.docs[0].data().following
-            onSnapshot(
-              query(
-                collection(db, `posts`), where("userId", "in", followingList)
-              ),
-              (snapshot) => {
-                console.log(snapshot.docs.map((doc) => doc.data()))
-                setPosts(snapshot.docs.map((doc) => doc.data()))
-              }
-            )
+            console.log(followingList)
+            if(followingList !== undefined) {
+              onSnapshot(
+                query(
+                  collection(db, `posts`), where("userId", "in", followingList)
+                ),
+                (snapshot) => {
+                  console.log(snapshot.docs.map((doc) => doc.data()))
+                  setPosts(snapshot.docs.map((doc) => doc.data()).sort((a, b) => b.timestamp - a.timestamp))
+                }
+              )
+              setAddNewUser(true)
+            }
           }
         }
       )
@@ -101,8 +101,8 @@ const Feed = () => {
         addNewUser == false
         ?(
           <div className="text-center text-xl">
-          <div className="">Welcome to Chirper!</div>
-          <div className="px-3 py-1 bg-green-800 rounded-3xl w-fit mx-auto mt-2 cursor-pointer" onClick={()=>addUserToDB()}>Get Started</div>
+            <div className="">Welcome to Chirper!</div>
+            <div className="px-3 py-1 bg-green-800 rounded-3xl w-fit mx-auto mt-2 cursor-pointer" onClick={()=>addUserToDB()}>Get Started</div>
           </div>
         )
         :(

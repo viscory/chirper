@@ -4,18 +4,22 @@ import { BiHash } from 'react-icons/bi'
 import { BsTwitter, BsBell, BsBookmark, BsThreeDots } from 'react-icons/bs'
 import { AiFillHome, AiOutlineInbox, AiOutlineUser } from 'react-icons/ai'
 import { HiOutlineClipboardList, HiOutlineDotsCircleHorizontal } from 'react-icons/hi'
+import { useRouter } from 'next/router'
 
 import SidebarLink from './SidebarLink'
 
 const Sidebar = () => {
   const { data: session } = useSession()
+  const router = useRouter()
   return (
     <div className='hidden sm:flex flex-col items-center xl:items-start xl:w-[340px] p-2 fixed h-full border-r border-gray-400 pr-0 xl:pr-8'>
-      <div className='flex items-center justify-center w-14 h-14 hoverEffect p-0 xl:ml-24'>
+      <div className='flex items-center justify-center w-14 h-14 hoverEffect p-0 xl:ml-24' onClick={()=>router.push('/')}>
         <BsTwitter className='text-white text-[34px]'/>
       </div>
       <div className='space-y-2 mt-4 mb-2.5 xl:ml-24'>
-        <SidebarLink text='Home' Icon={AiFillHome}/>
+        <div onClick={()=>router.push('/')}>
+          <SidebarLink text='Home' Icon={AiFillHome}/>
+        </div>
         <SidebarLink text='Explore' Icon={BiHash}/>
         {/* <SidebarLink text='Notifications' Icon={BsBell}/> */}
         <SidebarLink text='Messages' Icon={AiOutlineInbox}/>

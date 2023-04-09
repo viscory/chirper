@@ -136,7 +136,7 @@ const Post = ({ post}) => {
                     <RiDeleteBin5Line className='w-5 h-5'
                         onClick={(e) => {
                         e.stopPropagation();
-                        deleteDoc(doc(db, "posts", id));
+                        deleteDoc(doc(db, "posts", post.id));
                     }} />
                 </div>
             )}
