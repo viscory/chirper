@@ -1,24 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { BsImage, BsEmojiSmile } from "react-icons/bs"
 import { AiOutlineGif, AiOutlineClose } from "react-icons/ai"
 import { RiBarChart2Line } from "react-icons/ri"
 import { IoCalendarNumberOutline } from "react-icons/io5"
 import { HiOutlineLocationMarker } from "react-icons/hi"
 import { useSession } from 'next-auth/react'
-
+import { AppContext } from '@/contexts/AppContext'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
-import { db, storage } from '../firebase'
+import { addDoc, collection, doc, serverTimestamp, updateDoc, setDoc, arrayUnion } from 'firebase/firestore'
+import { db, storage } from '../../firebase'
 import { getDownloadURL, ref, uploadString } from 'firebase/storage'
 
-const Input = () => {
+const Input = ({user}) => {
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
   const [selectedFile, setSelectedFile] = useState(null)
   const [showEmojis, setShowEmojis] = useState(false)
   const { data: session } = useSession()
-
+  const [appContext, setAppContext] = useContext(AppContext)
+  const userId = localStorage.getItem('userId')
   const addImageToPost = (e) => {
     const reader = new FileReader()
     if (e.target.files[0]) {
@@ -28,7 +29,6 @@ const Input = () => {
       setSelectedFile(readerEvent.target.result)
     }
   }
-
   const addEmoji = (e) => {
     let sym = e.unified.split("-")
     let codesArray = []
@@ -40,28 +40,36 @@ const Input = () => {
 const sendPost = async () => {
     if (loading)
         return
-
     setLoading(true)
     const docRef = await addDoc(collection(db, 'posts'), {
-        id: session.user.uid,
-        username: session.user.name,
-        userImg: session.user.image,
-        tag: session.user.tag,
-        text: input,
-        timestamp: serverTimestamp(),
+      username: user.username,
+      userImg: user.userImg,
+      tag: user.tag,
+      userId: user.userId,
+      text: input,
+      likes: [],
+      dislikes: [],
+      timestamp: serverTimestamp()
+    })
+    await updateDoc(doc(db, "posts", docRef.id), {
+      id: docRef.id,
     })
 
     const imageRef = ref(storage, `posts/${docRef.id}/image`)
-
     if (selectedFile) {
-        await uploadString(imageRef, selectedFile, "data_url")
-            .then(async () => {
-                const downloadURL = await getDownloadURL(imageRef);
-                await updateDoc(doc(db, "posts", docRef.id), {
-                    image: downloadURL,
-                })
-            })
+      await uploadString(imageRef, selectedFile, "data_url")
+      .then(async () => {
+          const downloadURL = await getDownloadURL(imageRef);
+          await updateDoc(doc(db, "posts", docRef.id), {
+              image: downloadURL,
+          })
+      })
     }
+    setLoading(false)
+    setInput("")
+    setSelectedFile(null)
+    setShowEmojis(false)
+
     setLoading(false)
     setInput("")
     setSelectedFile(null)
@@ -75,8 +83,7 @@ const sendPost = async () => {
       </div>
       <div className='w-[90%]'>
         <textarea
-          className='w-full bg-transparent outline-none text-[20px]'
-          rows='2'
+          className='post_textarea'
           placeholder="What's happening?"
           value={input}
           onChange={(e) => setInput(e.target.value)}/>
@@ -99,13 +106,13 @@ const sendPost = async () => {
               <label htmlFor="file">
                   <BsImage className='cursor-pointer' />
               </label>
-              <input id="file" type="file"
+              <input 
+                  id="file" 
+                  type="file"
+                  accept="image/*"
                   hidden
                   onChange={addImageToPost}
               />
-              <div className='border-[#1d9bf0] border rounded h-[18px] text-[16px] grid place-items-center'>
-                  <AiOutlineGif />
-              </div>
               <RiBarChart2Line className='rotate-90' />
               <BsEmojiSmile className='cursor-pointer' onClick={() => setShowEmojis(!showEmojis)} />
               <IoCalendarNumberOutline />

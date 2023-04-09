@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('./common.css');
+@import url('./feedpage.css');
+@import url('./login.css');
+@import url('./adminpage.css');
+
 @layer base {
   body{
     @apply bg-black
