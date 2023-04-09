@@ -25,9 +25,6 @@ export default function UserSearch() {
               query(collection(db, `users`), where("tag", "==", window.location.pathname.split("/")[2])),
               (snapshot) => {
                   let res = snapshot.docs.map((data) => data.data())
-                  for(let i in res){
-                    res[i].objectId = snapshot.docs[i].id
-                  }
                   setResult(res)
                   onSnapshot(
                       query(collection(db, `users`), where(documentId(), "==", userId)),
@@ -45,21 +42,22 @@ export default function UserSearch() {
     
 
     useEffect(() => {
+      console.log(result)
     }, [result, following])
 
     const followUser = async (account) => {
       console.log(account)
       await updateDoc(doc(db, "users", userId), {
-        following: [...following, account.objectId]
+        following: [...following, account.userId]
       })
-      setFollowing([...following, account.objectId])
+      setFollowing([...following, account.userId])
     }
 
     const unfollowUser = async (account) => {
-        setFollowing(following.filter((item) => item.tag!== account.tag))
-        const followingAccount = following.find((item) => item.tag === account.tag)
-        console.log(account)
-        await deleteDoc(doc(db, `users/${localStorage.getItem("userId")}/following/`, followingAccount.objectId));
+      await updateDoc(doc(db, "users", userId), {
+        following: following.filter((id) => id!== account.userId)
+      })
+      setFollowing(following.filter((id) => id!== account.userId))
     }
  
   return (
@@ -73,17 +71,16 @@ export default function UserSearch() {
           <div className='flex gap-6'>
             <div className='sm:ml-20 xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white p-2'>
               {
-                result.map(((account, index) => {
+                result.map(((account) => {
                     return(
                         <div className="border-b-2 border-white py-3 flex">
                             <img src={account.userImg} className="rounded-full w-7 h-7 mr-4 my-auto" />
                             <div className="text-lg mr-4 my-auto">{account.username}</div>
                             <div className="text-lg my-auto">@{account.tag}</div>
                             {
-                                account.tag !== session.user.tag
-                                ?following.some((item)=> item.tag === account.tag)
-                                ?(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400" onClick={()=>unfollowUser(account, index)}>Unfollow</div>)
-                                :(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400" onClick={()=>followUser(account, index)}>Follow</div>):null
+                                following.includes(account.userId)
+                                ?(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>unfollowUser(account)}>Unfollow</div>)
+                                :(<div className="ml-auto px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>followUser(account)}>Follow</div>)
                             }
                             
                         </div>

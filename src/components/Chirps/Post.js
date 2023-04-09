@@ -7,12 +7,12 @@ import Moment from 'react-moment'
 
 import { db } from "@/firebase"
 import { useRouter } from 'next/router'
-import { collection, deleteDoc, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore'
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, where, setDoc } from 'firebase/firestore'
 import { useSession } from "next-auth/react"
 import { AppContext } from '@/contexts/AppContext'
 
 
-const Post = ({ id, post }) => {
+const Post = ({ post}) => {
 
   const [dislikes, setDislikes] = useState([])
   const [disliked, setDisliked] = useState(false)
@@ -22,70 +22,66 @@ const Post = ({ id, post }) => {
 
   const { data: session } = useSession()
   const router = useRouter()
-  console.log(post)
   const [appContext, setAppContext] = useContext(AppContext)
+  const userId = localStorage.getItem('userId')
 
   useEffect(() => {
-      if(window !== "undefined"){
-        onSnapshot(
-        query(
-          collection(db, `users/${post.userId}/posts`, post.id, "comments"),
-          orderBy("timestamp", "desc")
-        ),
-        (snapshot) => {
-          setComments(snapshot.docs)
-          onSnapshot(collection(db, `users/${post.userId}/posts`, post.id, "likes"), (snapshot) => {
-                const data = snapshot.docs
-                setLikes(data)
-                setLiked(
-                    data.findIndex((like) => like.id === post.userId) !== -1
-                )
-                onSnapshot(collection(db, `users/${post.userId}/posts`, post.id, "dislikes"), (snapshot) => {
-                      const data = snapshot.docs
-                      setDislikes(data)
-                      setDisliked(
-                          data.findIndex((dislike) => dislike.id === post.userId) !== -1
-                      )
-                  })
-                })
-            
-        }
-      )}}, 
-    // [db, id]
-    []
-  )
+    console.log(post)
+    setLiked(post.likes.includes(userId))
+    setLikes(post.likes)
+    setDisliked(post.dislikes.includes(userId))
+    setDislikes(post.dislikes)
+    // setComments(post.comments)
+  }, [])
+
   
   const likePost = async () => {
-    if (liked) {
-        setLiked(false);
-        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "likes", post.userId));
-    } 
-    else {
-        setLiked(true)
-        await setDoc(doc(db, `users/${post.userId}/posts`, post.id, "likes", post.userId), {
-            username: session.user.name,
-        });
-    }
-    if (disliked) {
-        setDisliked(false)
-        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "dislikes", post.userId));
-    }
+    let updatedLikes = likes
+    let updatedLiked = liked
+    let updatedDislikes = dislikes
+    let updatedDisliked = disliked
+      if(liked == true){
+        updatedLikes = likes.filter(id => id!== userId)
+        updatedLiked = false;
+      }
+      else{
+        updatedLiked = true;
+        updatedLikes = [...likes, userId]
+        updatedDisliked = false;
+        updatedDislikes = dislikes.filter(id => id!== userId)
+      }
+    await updateDoc(doc(db, "posts", post.id), {
+      likes: updatedLikes,
+      dislikes: updatedDislikes
+    })
+    setLiked(updatedLiked)
+    setLikes(updatedLikes)
+    setDisliked(updatedDisliked)
+    setDislikes(updatedDislikes)
   }
   const dislikePost = async () => {
-    if (disliked) {
-        setDisliked(false)
-        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "dislikes", post.userId));
-    } 
-    else {
-        setDisliked(true)
-        await setDoc(doc(db, `users/${post.userId}/posts`, post.id, "dislikes", post.userId), {
-            username: session.user.name,
-        });
-    }
-    if (liked) {
-        setLiked(false)
-        await deleteDoc(doc(db, `users/${post.userId}/posts`, post.id, "likes", userId));
-    }
+    let updatedLikes = likes
+    let updatedLiked = liked
+    let updatedDislikes = dislikes
+    let updatedDisliked = disliked
+      if(disliked == true){
+        updatedDislikes = dislikes.filter(id => id!== userId)
+        updatedDisliked = false;
+      }
+      else{
+        updatedLiked = false;
+        updatedLikes = likes.filter(id => id!== userId)
+        updatedDisliked = true;
+        updatedDislikes = [...dislikes, userId]
+      }
+    await updateDoc(doc(db, "posts", post.id), {
+      likes: updatedLikes,
+      dislikes: updatedDislikes
+    })
+    setLiked(updatedLiked)
+    setLikes(updatedLikes)
+    setDisliked(updatedDisliked)
+    setDislikes(updatedDislikes)
   }
 
   const openModal = () => {
@@ -95,11 +91,10 @@ const Post = ({ id, post }) => {
       post,
       postId: post.id
     })
-
   }
 
   return (
-    <div className='post_container' onClick={() => router.push(`/users/${post.userId}/chirps/${post.id}`)}>
+    <div className='post_container' onClick={() => router.push(`/chirps/${post.id}`)}>
       <div className='post_margin'>
         <div>
           <img className='post_avatar' src={post?.userImg} alt="" />

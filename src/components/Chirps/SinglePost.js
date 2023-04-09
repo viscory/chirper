@@ -12,24 +12,22 @@ const SinglePost = () => {
     const [post, setPost] = useState(null)
     const router = useRouter()
     const [comments, setComments] = useState([])
+    const [user, setUser] = useState(null)
 
-    useEffect(
-        () =>{
+    useEffect(() =>{
             if(window !== "undefined"){
-                onSnapshot(query(collection(db, `users`), where("userId", "==", window.location.pathname.split('/')[2])), 
+                onSnapshot(query(collection(db, `posts`), where("id", "==", window.location.pathname.split('/')[2])), 
                     (snapshot) => {
-                        setPost(snapshot.docs[0].data().posts.filter(post => post.id === window.location.pathname.split('/')[4])[0])
-                        setComments(snapshot.docs[0].data().comments)
+                        setPost(snapshot.docs[0].data())
                     }
                 )  
             }
-        []}
+        }
     , [])
 
-    useEffect(() => {
-        console.log(comments)
-        console.log(post)
-    }, [comments, post])
+    // useEffect(() => {
+    //     setComments(post.comments)
+    // }, [comments, post])
     return (
         <section className='w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
             <div className='sticky top-0 bg-black flex items-center gap-4 font-medium text-[20px] px-4 py-2'>

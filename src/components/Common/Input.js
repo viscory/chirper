@@ -30,7 +30,6 @@ const Input = ({user}) => {
       setSelectedFile(readerEvent.target.result)
     }
   }
-
   const addEmoji = (e) => {
     let sym = e.unified.split("-")
     let codesArray = []
@@ -43,46 +42,75 @@ const sendPost = async () => {
     if (loading)
         return
     setLoading(true)
-    const postId = nanoid(20)
-    const imageRef = ref(storage, `users/${userId}/posts/${postId}/image`)
+    const docRef = await addDoc(collection(db, 'posts'), {
+      username: user.username,
+      userImg: user.userImg,
+      tag: user.tag,
+      userId: user.userId,
+      text: input,
+      likes: [],
+      dislikes: [],
+      timestamp: serverTimestamp(),
+    })
+    await updateDoc(doc(db, "posts", docRef.id), {
+      id: docRef.id,
+    })
+
+    const imageRef = ref(storage, `posts/${docRef.id}/image`)
     if (selectedFile) {
-        await uploadString(imageRef, selectedFile, "data_url")
-        .then(async () => {
-            const downloadURL = await getDownloadURL(imageRef);
-            await updateDoc(doc(db, `users`, userId), {
-              posts: arrayUnion(
-                {
-                  id: postId,
-                  username: session.user.name,
-                  userImg: session.user.image,
-                  userId: userId,
-                  tag: session.user.tag,
-                  text: input,
-                  image: downloadURL,
-                  timestamp: new Date(),
-                }
-              )
-            })
-        })
-    }
-    else{
-      await updateDoc(doc(db, "users", userId), {
-        posts: arrayUnion(
-          {
-            id: postId,
-            username: session.user.name,
-            userImg: session.user.image,
-            userId: userId,
-            tag: session.user.tag,
-            text: input,
-            timestamp: new Date(),
-            comments: [],
-            likes: [],
-            dislikes: []
-          }
-        )
+      await uploadString(imageRef, selectedFile, "data_url")
+      .then(async () => {
+          const downloadURL = await getDownloadURL(imageRef);
+          await updateDoc(doc(db, "posts", docRef.id), {
+              image: downloadURL,
+          })
       })
     }
+    setLoading(false)
+    setInput("")
+    setSelectedFile(null)
+    setShowEmojis(false)
+    // const postId = nanoid(20)
+    // const imageRef = ref(storage, `users/${userId}/posts/${postId}/image`)
+    // if (selectedFile) {
+    //     await uploadString(imageRef, selectedFile, "data_url")
+    //     .then(async () => {
+    //         const downloadURL = await getDownloadURL(imageRef);
+    //         await updateDoc(doc(db, `users`, userId), {
+    //           posts: arrayUnion(
+    //             {
+    //               id: postId,
+    //               username: session.user.name,
+    //               userImg: session.user.image,
+    //               userId: userId,
+    //               tag: session.user.tag,
+    //               text: input,
+    //               image: downloadURL,
+    //               timestamp: new Date(),
+    //             }
+    //           )
+    //         })
+    //     })
+    // }
+    // else{
+    //   await updateDoc(doc(db, "users", userId), {
+    //     posts: [
+    //       ...user.posts,{
+    //         id: postId,
+    //         username: session.user.name,
+    //         userImg: session.user.image,
+    //         userId: userId,
+    //         tag: session.user.tag,
+    //         text: input,
+    //         timestamp: new Date(),
+    //         comments: [],
+    //         likes: [],
+    //         dislikes: []
+    //       }
+
+    //     ]
+    //   })
+    // }
 
     setLoading(false)
     setInput("")

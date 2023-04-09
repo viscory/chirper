@@ -24,31 +24,18 @@ const Feed = () => {
             setAddNewUser(false);
           }
           else{
-            const id = snapshot.docs[0].id
-            localStorage.setItem('userId', snapshot.docs[0].id)
-            setAppContext({
-              userId: id,
-              username: session.user.name,
-              userImg: session.user.image,
-              tag: session.user.tag
-            })
+            setAddNewUser(true)
             setUser(snapshot.docs[0].data())
-            
             const followingList = snapshot.docs[0].data().following
-            if(followingList.length > 0){
-              onSnapshot(
-                query(collection(db, 'users'), where(documentId(), "in", followingList)),
-                (snapshot) => {
-                  const chirps = []
-                  const data = snapshot.docs
-                  for(let i in data){
-                    chirps.push(...data[i].data().posts)
-                  }
-                  chirps.sort((a, b) => b.timestamp-a.timestamp)
-                  setPosts(chirps)
-                }
-              )
-            }
+            onSnapshot(
+              query(
+                collection(db, `posts`), where("userId", "in", followingList)
+              ),
+              (snapshot) => {
+                console.log(snapshot.docs.map((doc) => doc.data()))
+                setPosts(snapshot.docs.map((doc) => doc.data()))
+              }
+            )
           }
         }
       )
@@ -60,16 +47,11 @@ const Feed = () => {
     const docRef = await addDoc(collection(db, `users`), {
       username: session.user.name,
       userImg: session.user.image,
-      tag: session.user.tag,
-      following: [],
-      posts: []
+      tag: session.user.tag
     })
-    localStorage.setItem("userId", docRef.id)
     await updateDoc(doc(db, "users", docRef.id), {
-      following: arrayUnion(
-        docRef.id
-      ),
-      userId: docRef.id
+      userId: docRef.id,
+      following: [docRef.id]
     })
     setAppContext({
       ...appContext, 
@@ -77,12 +59,35 @@ const Feed = () => {
         userId: docRef.id,
         username: session.user.name,
         userImg: session.user.image,
-        tag: session.user.tag,
-        following: [],
-        posts: []
+        tag: session.user.tag
       }
     })
+    setUser({
+      userId: docRef.id,
+      username: session.user.name,
+      userImg: session.user.image,
+      tag: session.user.tag
+    })
+    localStorage.setItem("userId", docRef.id)
     setAddNewUser(true);
+  }
+
+  const updatePost = (singlePost) => {
+    const update = onSnapshot(
+      query(
+        collection(db, `users`), where("userId", "==", singlePost.userId)
+      ),
+      async (snapshot) => {
+        const postOwner = snapshot.docs[0].data();
+        const replaceIndex = postOwner.posts.findIndex((item) => item.id === singlePost.id)
+        postOwner.posts[replaceIndex] = singlePost
+        await updateDoc(doc(db, "users", singlePost.userId), {
+          posts: postOwner.posts
+        })
+      }
+    );
+    update();
+    
   }
 
   return (
@@ -97,17 +102,18 @@ const Feed = () => {
         ?(
           <div className="text-center text-xl">
           <div className="">Welcome to Chirper!</div>
-          <div className="px-3 py-1 bg-green-800 rounded-3xl w-fit mx-auto mt-2" onClick={()=>addUserToDB()}>Start</div>
+          <div className="px-3 py-1 bg-green-800 rounded-3xl w-fit mx-auto mt-2 cursor-pointer" onClick={()=>addUserToDB()}>Get Started</div>
           </div>
         )
         :(
           <>
           <Input className='' user={user} />
           {posts.map((post) => {
-          return(
-            <Post key={post.id} post={post} id={post.id} />
-          )
-        })}
+              return(
+                <Post key={post.id} post={post} id={post.id} user={user} updatePost={updatePost} />
+              )
+            }
+          )}
         </>
         )
       }
