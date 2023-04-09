@@ -7,19 +7,20 @@ import Moment from 'react-moment'
 import Modal from '@/components/Common/Modal'
 import { db } from "@/firebase"
 import { useRouter } from 'next/router'
-import { arrayRemove, arrayUnion, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, where, setDoc } from 'firebase/firestore'
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, addDoc, where } from 'firebase/firestore'
 import { useSession } from "next-auth/react"
 import { AppContext } from '@/contexts/AppContext'
 
 
 const Post = ({ post}) => {
-
+  const {data: session} = useSession()
   const [dislikes, setDislikes] = useState([])
   const [disliked, setDisliked] = useState(false)
   const [likes, setLikes] = useState([])
   const [liked, setLiked] = useState(false)
   const [comments, setComments] = useState([])
   const [commentModal, setCommentModal] = useState(false)
+  const [retweetee, setRetweetee] = useState(null)
   const router = useRouter()
   const userId = localStorage.getItem('userId')
 
@@ -28,12 +29,25 @@ const Post = ({ post}) => {
     setLikes(post.likes)
     setDisliked(post.dislikes.includes(userId))
     setDislikes(post.dislikes)
+    console.log(post)
     if(post.id){
       onSnapshot(query(
         collection(db, "posts", post.id, "replies")),
         (snapshot) => {
           const replies = snapshot.docs.map((doc) => doc.data())
           setComments(replies)
+          if(post.retweeteeId!=undefined){
+            onSnapshot(query(
+              collection(db, "users"), where("userId", "==", post.userId)),
+              (snapshot) => {
+                if(snapshot.docs && snapshot.docs.length > 0){
+                  console.log("execute")
+                  console.log(snapshot.docs[0].data())
+                  setRetweetee(snapshot.docs[0].data())
+                }
+              }
+            )
+          }
         }
       )
     }
@@ -94,8 +108,28 @@ const Post = ({ post}) => {
     setCommentModal(true)
   }
 
+  const retweetPost = async () => {
+    const docRef = await addDoc(collection(db, `posts`), {
+      ...post,
+      userId: userId,
+      retweeteeId: post.userId,
+    })
+    await updateDoc(doc(db, "posts", docRef.id), {
+        id: docRef.id
+    })
+  }
+
   return (
     <div className='post_container' onClick={() => router.push(`/chirps/${post.id}`)}>
+      {
+        retweetee?(
+          <div className="ml-3 mb-2 text-xs text-gray-300 flex">
+            <FaRetweet className='w-3 h-3 mr-2 my-auto' />
+            {retweetee.username} retweeted this
+          </div>
+        )
+        :null
+      }
       <div className='post_margin'>
         <div>
           <img className='post_avatar' src={post?.userImg} alt="" />
@@ -119,14 +153,16 @@ const Post = ({ post}) => {
           <div className='post_action_bar'>
             <div className='flex gap-1 items-center'>
             <div className='post_action_button'>
-                <BsChat className='h-5 w-5' onClick={(openModal)} />
+                {
+                  post.retweeteeId?null:<BsChat className='h-5 w-5' onClick={(openModal)} />
+                }
                 {comments.length > 0 && (<span className='text-sm ml-2'>{comments.length}</span>)}
                 </div>
             </div>
               
             <div className='flex gap-1 items-center'>
             {post.userId !== userId ? (
-                <div className='post_action_button'>
+                <div className='post_action_button' onClick={()=>retweetPost()}>
                     <FaRetweet className='w-5 h-5' />
                 </div>
             ) : (
@@ -178,7 +214,6 @@ const Post = ({ post}) => {
           </div>
         </div>
       </div>
-      <Modal open={commentModal} setOpen={setCommentModal} post={post} userId={userId} />
     </div>
   )
 }

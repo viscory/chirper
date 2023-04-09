@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { onSnapshot, collection, query, orderBy, where, addDoc, updateDoc, doc, arrayUnion,  documentId } from 'firebase/firestore'
+import { onSnapshot, collection, query, orderBy, where, addDoc, updateDoc, doc, arrayUnion,  documentId, or } from 'firebase/firestore'
 import { HiOutlineSparkles } from 'react-icons/hi'
 import Post from './Post'
 import { db } from '@/firebase'
