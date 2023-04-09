@@ -6,7 +6,6 @@ import { IoCalendarNumberOutline } from "react-icons/io5"
 import { HiOutlineLocationMarker } from "react-icons/hi"
 import { useSession } from 'next-auth/react'
 import { AppContext } from '@/contexts/AppContext'
-import { nanoid } from 'nanoid'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { addDoc, collection, doc, serverTimestamp, updateDoc, setDoc, arrayUnion } from 'firebase/firestore'
@@ -50,7 +49,7 @@ const sendPost = async () => {
       text: input,
       likes: [],
       dislikes: [],
-      timestamp: serverTimestamp(),
+      timestamp: serverTimestamp()
     })
     await updateDoc(doc(db, "posts", docRef.id), {
       id: docRef.id,
@@ -70,47 +69,6 @@ const sendPost = async () => {
     setInput("")
     setSelectedFile(null)
     setShowEmojis(false)
-    // const postId = nanoid(20)
-    // const imageRef = ref(storage, `users/${userId}/posts/${postId}/image`)
-    // if (selectedFile) {
-    //     await uploadString(imageRef, selectedFile, "data_url")
-    //     .then(async () => {
-    //         const downloadURL = await getDownloadURL(imageRef);
-    //         await updateDoc(doc(db, `users`, userId), {
-    //           posts: arrayUnion(
-    //             {
-    //               id: postId,
-    //               username: session.user.name,
-    //               userImg: session.user.image,
-    //               userId: userId,
-    //               tag: session.user.tag,
-    //               text: input,
-    //               image: downloadURL,
-    //               timestamp: new Date(),
-    //             }
-    //           )
-    //         })
-    //     })
-    // }
-    // else{
-    //   await updateDoc(doc(db, "users", userId), {
-    //     posts: [
-    //       ...user.posts,{
-    //         id: postId,
-    //         username: session.user.name,
-    //         userImg: session.user.image,
-    //         userId: userId,
-    //         tag: session.user.tag,
-    //         text: input,
-    //         timestamp: new Date(),
-    //         comments: [],
-    //         likes: [],
-    //         dislikes: []
-    //       }
-
-    //     ]
-    //   })
-    // }
 
     setLoading(false)
     setInput("")

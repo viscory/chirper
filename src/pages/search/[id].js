@@ -91,10 +91,6 @@ export default function UserSearch() {
             <Trending />
           </div>
         </main>
-      {appContext?.isModalOpen && <Modal />}
-      {
-        appContext?.isModalOpen && <Modal />
-      }
     </div>
   )
 }

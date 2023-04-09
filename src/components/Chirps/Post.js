@@ -4,7 +4,7 @@ import { FaRetweet } from "react-icons/fa"
 import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from 'react-icons/ai'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import Moment from 'react-moment'
-
+import Modal from '@/components/Common/Modal'
 import { db } from "@/firebase"
 import { useRouter } from 'next/router'
 import { arrayRemove, arrayUnion, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, where, setDoc } from 'firebase/firestore'
@@ -19,19 +19,22 @@ const Post = ({ post}) => {
   const [likes, setLikes] = useState([])
   const [liked, setLiked] = useState(false)
   const [comments, setComments] = useState([])
-
-  const { data: session } = useSession()
+  const [commentModal, setCommentModal] = useState(false)
   const router = useRouter()
-  const [appContext, setAppContext] = useContext(AppContext)
   const userId = localStorage.getItem('userId')
 
   useEffect(() => {
-    console.log(post)
     setLiked(post.likes.includes(userId))
     setLikes(post.likes)
     setDisliked(post.dislikes.includes(userId))
     setDislikes(post.dislikes)
-    // setComments(post.comments)
+    onSnapshot(query(
+      collection(db, "posts", post.id, "replies")),
+      (snapshot) => {
+        const replies = snapshot.docs.map((doc) => doc.data())
+        setComments(replies)
+      }
+    )
   }, [])
 
   
@@ -84,13 +87,9 @@ const Post = ({ post}) => {
     setDislikes(updatedDislikes)
   }
 
-  const openModal = () => {
-    setAppContext({
-      ...appContext, 
-      isModalOpen: true,
-      post,
-      postId: post.id
-    })
+  const openModal = (e) => {
+    e.stopPropagation()
+    setCommentModal(true)
   }
 
   return (
@@ -110,7 +109,7 @@ const Post = ({ post}) => {
               </p>
             </div>
           </div>
-          <p className="my-2">{post?.text}</p>
+          <p className="my-2 text-lg">{post?.text}</p>
           <img
             className='post_image'
             src={post?.image}
@@ -118,10 +117,7 @@ const Post = ({ post}) => {
           <div className='post_action_bar'>
             <div className='flex gap-1 items-center'>
             <div className='post_action_button'>
-                <BsChat className='h-5 w-5' onClick={(e) => {
-                    e.stopPropagation();
-                    openModal()
-                }} />
+                <BsChat className='h-5 w-5' onClick={(openModal)} />
                 {comments.length > 0 && (<span className='text-sm ml-2'>{comments.length}</span>)}
                 </div>
             </div>
@@ -180,6 +176,7 @@ const Post = ({ post}) => {
           </div>
         </div>
       </div>
+      <Modal open={commentModal} setOpen={setCommentModal} post={post} userId={userId} />
     </div>
   )
 }

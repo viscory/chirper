@@ -4,7 +4,7 @@ import { HiOutlineSwitchHorizontal } from "react-icons/hi"
 import { BsBarChart, BsTrash, BsChatDots } from "react-icons/bs"
 import Moment from "react-moment";
 
-function Comment({ comment }) {
+function Comment({ comment, ownerTag }) {
     return (
         <div className="comment_container">
             <img
@@ -27,8 +27,11 @@ function Comment({ comment }) {
                         <span className="hover:underline text-sm sm:text-[15px]">
                             <Moment fromNow>{comment?.timestamp?.toDate()}</Moment>
                         </span>
-                        <p className="text-[#d9d9d9] mt-0.5 max-w-lg text-[15px] sm:text-base">
-                            {comment?.comment}
+                        <p className="text-[#d9d9d9] mt-0.5 max-w-lg text-[15px] sm:text-sm">
+                            replying to @{ownerTag}
+                        </p>
+                        <p className="text-[#d9d9d9] mt-0.5 max-w-lg text-[15px] sm:text-lg">
+                            {comment?.text}
                         </p>
                     </div>
                     <div className="icon group flex-shrink-0">

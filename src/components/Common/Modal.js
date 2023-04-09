@@ -1,116 +1,187 @@
 import React, { useContext, useState } from 'react'
 import { MdClose } from "react-icons/md"
 import { BsImage, BsEmojiSmile } from "react-icons/bs"
-import { AiOutlineGif, AiOutlineClose } from "react-icons/ai"
+import { AiOutlineGif, AiOutlineClose, AiFillCloseCircle } from "react-icons/ai"
 import { RiBarChart2Line } from "react-icons/ri"
 import { IoCalendarNumberOutline } from "react-icons/io5"
 import { HiOutlineLocationMarker } from "react-icons/hi"
 import { useSession } from 'next-auth/react'
 import { AppContext } from '@/contexts/AppContext'
 import Moment from 'react-moment'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, serverTimestamp, updateDoc, doc } from 'firebase/firestore'
 import { db } from '@/firebase'
+import { Fragment, useRef } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import Picker from '@emoji-mart/react'
+import data from '@emoji-mart/data'
 
-const Modal = () => {
-
-    const [input, setInput] = useState("")
-    const [appContext, setAppContext] = useContext(AppContext)
-    const { data: session } = useSession()
-
-    const closeModal = () => {
-        setAppContext({ ...appContext, isModalOpen: false })
+const Modal = ({open, setOpen, post}) => {
+    const {data: session} = useSession()
+    const [input, setInput] = useState('')
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [showEmojis, setShowEmojis] = useState(false)
+    const addImageToPost = (e) => {
+        const reader = new FileReader()
+        if (e.target.files[0]) {
+          reader.readAsDataURL(e.target.files[0])
+        }
+        reader.onload = (readerEvent) => {
+          setSelectedFile(readerEvent.target.result)
+        }
+      }
+      const addEmoji = (e) => {
+        let sym = e.unified.split("-")
+        let codesArray = []
+        sym.forEach((el) => codesArray.push("0x" + el))
+        let emoji = String.fromCodePoint(...codesArray)
+        setInput(input + emoji)
     }
-
-    const post = appContext.post
-
-    const sendComment = async (e) => {
-
-        e.preventDefault();
-
-        await addDoc(collection(db, "posts", appContext.postId, "comments"), {
-          comment: input,
-          username: session.user.name,
-          tag: session.user.tag,
-          userImg: session.user.image,
-          timestamp: serverTimestamp(),
-        });
-
-        setAppContext({...appContext, isModalOpen: false})
-        setInput("");
-
-        // router.push(`/${appContext.postId}`);
+    const sendReply = async () => {
+        const docRef = await addDoc(collection(db, `posts`, post.id, "replies"), {
+            username: session.user.name,
+            userImg: session.user.image,
+            tag: session.user.tag,
+            text: input,
+            time: serverTimestamp()
+        })
+        await updateDoc(doc(db, "posts", post.id, "replies", docRef.id), {
+            id: docRef.id
+        })
+        setInput('')
+        setOpen(false)
     }
+    return(
+        <Transition.Root show={open} as={Fragment}>
+        <Dialog
+            as="div"
+            className="fixed z-10 inset-0 overflow-visible"
+            onClose={()=>setOpen(false)}
+        >
+            <div
+            className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block
+            sm:p-0"
+            >
+            <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+            >
+                <Dialog.Overlay className="fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
 
-    return (
-        <div className='fixed to-0 left-0 z-[20] h-screen w-screen bg-[#242d34bb]' onClick={closeModal}>
-
-            <div className='bg-black w-[350px] md:w-[650px] text-white absolute left-[50%] translate-x-[-50%] mt-[40px] p-4 rounded-[20px]'
-                onClick={(e) => e.stopPropagation()}>
-
-                <MdClose className='text-[22px] cursor-pointer' onClick={closeModal} />
-
-                <div className='relative mt-8 grid grid-cols-[48px,1fr] gap-4'>
-
-                    <div>
-                        <img className='rounded-full' src={post?.userImg} alt="" />
+            {/* This element is to trick the browser into centering the modal contents. */}
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+                &#8203;
+            </span>
+            <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+                <div
+                className="inline-block align-bottom bg-gray-800
+                text-left 
+                overflow-visible shadow-xl 
+                transform transition-all 
+                sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full"
+                >
+                <div className="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <Dialog.Title as="div" className="text-lg leading-6 font-medium text-white">
+                        Replying to @{post.tag}'s tweet
+                        </Dialog.Title>
                     </div>
-
-                    <div>
-                        <div className='flex gap-2 text-[12px] md:text-[16px]'>
-                            <h1>{post?.username}</h1>
-                            <h2 className='text-gray-500'><Moment fromNow>{post?.timestamp?.toDate()}</Moment></h2>
-                        </div>
-                        <p className='text-[12px] md:text-[16px]'>{post?.text}</p>
-
-                        <img src={post?.image} className='mt-2 max-h-[250px] rounded-[15px] object-cover' alt="" />
-
-                        <p className='mt-4 text-gray-500'>Replying to: <span className='text-[#1d9bf0]'>@{post?.tag}</span></p>
-
                     </div>
-
-                    <div className='mt-4'>
-                        <img className='rounded-full' src={session?.user?.image} alt="" />
-                    </div>
-
-                    <div className='mt-4'>
+                </div>
+                <div className='flex flex-col px-8'>
+                
+                <div className="mt-2">
                         <textarea
-                            className='w-[100%] bg-transparent outline-none text-[18px]'
-                            rows="4"
-                            placeholder="Tweet your reply"
+                            className='post_textarea h-auto text-white'
+                            placeholder="Type you reply here..."
                             value={input}
-                            onChange={(e) => setInput(e.target.value)} />
-
-                        <div className='flex justify-between items-center'>
-                            <div className='flex gap-4 text-[20px] text-[#1d9bf0]'>
-
-                                <BsImage />
-
-                                <div className='border-[#1d9bf0] border rounded h-[18px] text-[16px] grid place-items-center'>
-                                    <AiOutlineGif />
+                            onChange={(e) => setInput(e.target.value)}
+                            rows="6"
+                        />
+                        {
+                            selectedFile&&
+                            <div className="relative w-fit">
+                                <img
+                                    src={selectedFile}
+                                    alt=''
+                                    className='rounded-2xl h-20 w-20 object-contain my-4'
+                                />
+                                <div className="absolute -right-2 -top-2 cursor-pointer" onClick={()=>setSelectedFile(null)}>
+                                    <AiFillCloseCircle className="h-4 w-4" />
                                 </div>
-                                <RiBarChart2Line className='rotate-90' />
-                                <BsEmojiSmile />
-                                <IoCalendarNumberOutline className='hidden md:block' />
-                                <HiOutlineLocationMarker className='hidden md:block' />
                             </div>
 
-                            <button
-                                className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
-                                disabled={!input.trim()}
-                                onClick={sendComment}>
-                                Tweet
-                            </button>
-                        </div>
-
-
-
+                        }
                     </div>
-
+                    <div className='flex gap-4 text-[20px] text-[#1d9bf0]'>
+                    <label htmlFor="file">
+                        <BsImage className='cursor-pointer' />
+                    </label>
+                    <input 
+                        id="file" 
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={addImageToPost}
+                    />
+                    <RiBarChart2Line className='rotate-90' />
+                    <BsEmojiSmile className='cursor-pointer' onClick={() => setShowEmojis(!showEmojis)} />
+                    <IoCalendarNumberOutline />
+                    <HiOutlineLocationMarker />
+                    </div>
                 </div>
 
+                {showEmojis && (
+                    <div className='absolute max-w-[320px] rounded-[20px] z-50'>
+                        <Picker
+                            onEmojiSelect={addEmoji}
+                            data={data}
+                            theme="dark"
+                        />
+                    </div>
+                )}
+                <div className="bg-gray-800 px-4 py-3 sm:px-6 flex">
+                <div className="ml-auto">
+                    
+                    <button
+                    type="button"
+                    className="mt-3 w-full inline-flex justify-center
+                    rounded-md border border-gray-300 shadow-sm px-4 py-2
+                    bg-white text-base font-medium text-gray-700
+                        hover:bg-gray-50 focus:outline-none focus:ring-2
+                        focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0
+                        sm:ml-3 sm:w-auto sm:text-sm ml-auto"
+                    onClick={()=>setOpen(false)}
+                    >
+                    Cancel
+                    </button>
+                    <button
+                        className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default ml-4"
+                        disabled={!input.trim() && !selectedFile}
+                        onClick={sendReply} >
+                        Tweet
+                    </button>
+                </div>
+                </div>
+                </div>
+            </Transition.Child>
             </div>
-
-        </div>
+        </Dialog>
+        </Transition.Root>
     )
 }
 

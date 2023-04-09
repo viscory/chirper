@@ -19,6 +19,13 @@ const SinglePost = () => {
                 onSnapshot(query(collection(db, `posts`), where("id", "==", window.location.pathname.split('/')[2])), 
                     (snapshot) => {
                         setPost(snapshot.docs[0].data())
+                        onSnapshot(query(
+                            collection(db, "posts", snapshot.docs[0].data().id, "replies")),
+                            (snapshot) => {
+                                const replies = snapshot.docs.map((doc) => doc.data())
+                                setComments(replies)
+                            }
+                        )
                     }
                 )  
             }
@@ -38,19 +45,25 @@ const SinglePost = () => {
                 post?<Post post={post} />:null
 
             }
-            
-
             <div className='border-t border-gray-700'>
-                {comments && comments.length > 0 && (
+                {comments && comments.length > 0 
+                ? (
+                    <>
+                    <div className="px-4 py-2 border-b border-gray-700">Scroll down for replies...</div>
                     <div className="pb-72">
                         {comments.map((comment) => (
                             <Comment
                                 key={comment.id}
                                 id={comment.id}
-                                comment={comment.data()}
+                                comment={comment}
+                                ownerTag={post.tag}
                             />
                         ))}
                     </div>
+                    </>
+                )
+                :(
+                    <div className="px-4 py-2 border-b border-gray-700">This post has no replies, be the first one to comment!</div>
                 )}
             </div>
 

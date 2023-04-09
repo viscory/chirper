@@ -32,10 +32,6 @@ export default function Home() {
             <Trending />
           </div>
         </main>
-      {appContext?.isModalOpen && <Modal />}
-      {
-        appContext?.isModalOpen && <Modal />
-      }
     </div>
   )
 }
