@@ -10,9 +10,9 @@ const Login = () => {
 
   const router = useRouter()
 
-  const googleSignin = () => {
-    signIn('google', {callbackUrl: '/'});
-  }
+  // const googleSignin = () => {
+  //   signIn('google', {callbackUrl: '/'});
+  // }
   const emailSignin = () => {
     router.push("/login")
   }
@@ -35,14 +35,14 @@ const Login = () => {
         <BsTwitter className='text-white text-[200px]'/>
       </div>
       <div className='absolute bottom-20 flex left-0 right-0 mx-auto'>
-        <div className='google_sign_in_button' onClick={() => googleSignin()}>
+        {/* <div className='google_sign_in_button' onClick={() => googleSignin()}>
           <div
             className='login_button_text'
           >
             <FcGoogle className='login_button_icon'/>
             Sign In with Google
           </div>
-        </div>
+        </div> */}
         <div className='email_sign_in_button' onClick={() => emailSignin()}>
           <div
             className='login_button_text'

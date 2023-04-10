@@ -7,13 +7,10 @@ import Moment from 'react-moment'
 import Modal from '@/components/Common/Modal'
 import { db } from "@/firebase"
 import { useRouter } from 'next/router'
-import { arrayRemove, arrayUnion, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, addDoc, where } from 'firebase/firestore'
-import { useSession } from "next-auth/react"
-import { AppContext } from '@/contexts/AppContext'
+import { collection, deleteDoc, doc, onSnapshot, query, updateDoc, addDoc, where } from 'firebase/firestore'
 
 
 const Post = ({ post}) => {
-  const {data: session} = useSession()
   const [dislikes, setDislikes] = useState([])
   const [disliked, setDisliked] = useState(false)
   const [likes, setLikes] = useState([])
@@ -29,7 +26,6 @@ const Post = ({ post}) => {
     setLikes(post.likes)
     setDisliked(post.dislikes.includes(userId))
     setDislikes(post.dislikes)
-    console.log(post)
     if(post.id){
       onSnapshot(query(
         collection(db, "posts", post.id, "replies")),

@@ -1,9 +1,6 @@
-import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 
 export default function ChatRoom() {
-//   const {data: session} = useSession()
-//   if(!session) return <Login />
 
   return (
     <div>

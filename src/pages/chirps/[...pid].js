@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react'
-import { getSession, useSession } from 'next-auth/react'
 import Login from '@/components/Login'
 import Sidebar from '@/components/Common/Sidebar'
 import Head from 'next/head'
@@ -9,7 +8,6 @@ import Trending from '@/components/Common/Trending'
 
 const PostPage = () => {
 
-  const { data: session } = useSession()
   const [appContext] = useContext(AppContext)
 
   const [hasMounted, setHasMounted] = React.useState(false);
@@ -41,13 +39,3 @@ const PostPage = () => {
 }
 
 export default PostPage
-
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-
-  return {
-    props: {
-      session
-    },
-  };
-}

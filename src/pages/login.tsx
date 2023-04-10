@@ -2,18 +2,14 @@ import React, {useEffect, useState} from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../firebase'
+import { auth, db } from '../firebase'
+import { addDoc, collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore'
 const EmailLogin = () => {
     const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [valid, setValid] = useState(false)
-    useEffect(() => {
-        if(window != undefined && localStorage.getItem('userId')){
-            router.push('/')
-        }
-    }, [])
     useEffect(() => {
         if(email && password){
             setValid(true)
@@ -22,13 +18,20 @@ const EmailLogin = () => {
             setValid(false)
         }
     }, [email, password])
+
     const loginUser = async () => {
         signInWithEmailAndPassword(auth, email, password)
         .then(async (res) => {
-            const user = res.user;
-            console.log(user);
-            localStorage.setItem('email', email);
-            // localStorage.setItem('tag', tag);
+            onSnapshot(
+                query(
+                  collection(db, `users`), where("email", "==", res.user.email)
+                ),
+                (snapshot: any) => {
+                  localStorage.setItem('userId', res.user.uid)
+                  localStorage.setItem('username', snapshot.docs[0].data().tag)
+                  localStorage.setItem('tag', snapshot.docs[0].data().tag)
+                }
+              )
             router.push('/')
         })
         .catch((error) => {
@@ -37,6 +40,7 @@ const EmailLogin = () => {
         })
 
     }
+
     const [hasMounted, setHasMounted] = React.useState(false);
     React.useEffect(() => {
       setHasMounted(true);
@@ -62,14 +66,17 @@ const EmailLogin = () => {
                     <div className="text-white text-lg my-2">Password</div>
                     <input type="password" className="w-full" value={password} onChange={(e) => setPassword(e.target.value)}/>
                 </div>
-                {
-                    valid
-                    ?<div className="rounded-full px-4 py-2 bg-blue-400 mt-4 w-fit cursor-pointer" onClick={()=>loginUser()}>Login</div>
-                    :<div className="rounded-full px-4 py-2 bg-gray-400 mt-4 w-fit cursor-not-allowed">Login</div>
-                }
-                
                 {error && <div className="alert alert-danger">{error}</div>}
+                <div className="flex">
+                    <div className="my-auto text-white underline cursor-pointer" onClick={()=>router.push('/signup')}>Need to register for an account? Click here!</div>
+                    {
+                        valid
+                        ?<div className="rounded-full px-4 py-2 bg-blue-400 mt-4 w-fit cursor-pointer ml-auto" onClick={()=>loginUser()}>Login</div>
+                        :<div className="rounded-full px-4 py-2 bg-gray-400 mt-4 w-fit cursor-not-allowed ml-auto">Login</div>
+                    }
+                    
 
+                </div>
             </div>
         </div>
         </>

@@ -4,7 +4,6 @@ import { HiOutlineSparkles } from 'react-icons/hi'
 import Post from './Post'
 import { db } from '@/firebase'
 import Input from '../Common/Input'
-import { useSession } from "next-auth/react"
 import { AppContext } from '@/contexts/AppContext'
 
 const UserList = () => {
@@ -45,25 +44,6 @@ const UserList = () => {
     )
   }, [])
 
-
-  const addUserToDB = async () => {
-    const docRef = await addDoc(collection(db, `users`), {
-      username: session.user.name,
-      userImg: session.user.image,
-      tag: session.user.tag
-    })
-    setAppContext({
-      ...appContext, 
-      user: {
-        userId: docRef.id,
-        username: session.user.name,
-        userImg: session.user.image,
-        tag: session.user.tag
-      }
-    })
-    setAddNewUser(true);
-    loadPosts(docRef.id)
-  }
     
 
   return (
