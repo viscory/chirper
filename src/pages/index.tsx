@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
-import Login from "@/components/login"
+import Login from "@/components/Login"
 import Feed from '../components/Chirps/Feed'
 import { AppContext } from '@/contexts/AppContext'
 import { useContext, useEffect } from 'react'
