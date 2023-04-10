@@ -38,9 +38,9 @@ const Modal = ({open, setOpen, post}) => {
     }
     const sendReply = async () => {
         const docRef = await addDoc(collection(db, `posts`, post.id, "replies"), {
-            username: session.user.name,
-            userImg: session.user.image,
-            tag: session.user.tag,
+            username: localStorage.getItem('username')!=null?localStorage.getItem('username'):session.user.name,
+            userImg: localStorage.getItem('username')!=null?"https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg":session.user.image,
+            tag: localStorage.getItem('tag')!=null?localStorage.getItem('tag'):session.user.tag,
             text: input,
             time: serverTimestamp()
         })

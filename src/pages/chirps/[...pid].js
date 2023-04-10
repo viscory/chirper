@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { getSession, useSession } from 'next-auth/react'
 import Login from '@/components/Login'
 import Sidebar from '@/components/Common/Sidebar'
@@ -12,7 +12,13 @@ const PostPage = () => {
   const { data: session } = useSession()
   const [appContext] = useContext(AppContext)
 
-  if (!session) return <Login />
+  const [hasMounted, setHasMounted] = React.useState(false);
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <div>
