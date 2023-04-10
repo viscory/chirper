@@ -67,7 +67,7 @@ const Modal = ({open, setOpen, post}) => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <Dialog.Overlay className="fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity" />
+                <Dialog.Overlay className="fixed inset-0 bg-gray-300 dark:bg-gray-800 bg-opacity-75 dark:bg-opacity-50 transition-opacity" />
             </Transition.Child>
 
             {/* This element is to trick the browser into centering the modal contents. */}
@@ -84,16 +84,16 @@ const Modal = ({open, setOpen, post}) => {
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
                 <div
-                className="inline-block align-bottom bg-gray-800
+                className="inline-block align-bottom bg-gray-100 dark:bg-gray-800
                 text-left 
                 overflow-visible shadow-xl 
                 transform transition-all 
                 sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full"
                 >
-                <div className="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="bg-gray-100 dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
-                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <Dialog.Title as="div" className="text-lg leading-6 font-medium text-white">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-2 sm:text-left">
+                        <Dialog.Title as="div" className="text-lg leading-6 font-medium text-black dark:text-white">
                         Replying to @{post.tag}'s tweet
                         </Dialog.Title>
                     </div>
@@ -151,7 +151,7 @@ const Modal = ({open, setOpen, post}) => {
                         />
                     </div>
                 )}
-                <div className="bg-gray-800 px-4 py-3 sm:px-6 flex">
+                <div className="bg-gray-100 dark:bg-gray-800 px-4 py-3 sm:px-6 flex">
                 <div className="ml-auto">
                     
                     <button
