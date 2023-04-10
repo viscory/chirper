@@ -41,34 +41,77 @@ const Feed = () => {
         }
       )
     }
+    else if(localStorage.getItem("userId")!== null) {
+      onSnapshot(
+        query(
+          collection(db, `users`), where("userId", "==", localStorage.getItem("userId"))
+        ),
+        (snapshot) => {
+          if(snapshot.docs.length > 0) {
+            setUser(snapshot.docs[0].data())
+            localStorage.setItem("userId", snapshot.docs[0].data().userId)
+            const followingList = snapshot.docs[0].data().following
+            console.log(followingList)
+            if(followingList !== undefined) {
+              onSnapshot(
+                query(
+                  collection(db, `posts`), where("userId", "in", followingList)
+                ),
+                (snapshot) => {
+                  console.log(snapshot.docs.map((doc) => doc.data()))
+                  setPosts(snapshot.docs.map((doc) => doc.data()).sort((a, b) => b.timestamp - a.timestamp))
+                }
+              )
+              setAddNewUser(true)
+            }
+          }
+        }
+      )
+    }
   }, [])
 
 
   const addUserToDB = async () => {
-    const docRef = await addDoc(collection(db, `users`), {
-      username: session.user.name,
-      userImg: session.user.image,
-      tag: session.user.tag
-    })
-    await updateDoc(doc(db, "users", docRef.id), {
-      userId: docRef.id,
-      following: [docRef.id]
-    })
-    setAppContext({
-      ...appContext, 
-      user: {
+    if(localStorage.getItem('tag')!= null) {
+      const username = localStorage.getItem('username')
+      const tag = localStorage.getItem('tag')
+      const docRef = await addDoc(collection(db, `users`), {
+        username: username,
+        userImg: "https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg",
+        tag: tag,
+      })
+      await updateDoc(doc(db, "users", docRef.id), {
+        userId: docRef.id,
+        following: [docRef.id]
+      })
+      
+      setUser({
+        userId: docRef.id,
+        username: username,
+        userImg: "https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg",
+        tag: tag
+      })
+      localStorage.setItem("userId", docRef.id)
+    }
+    else{
+      const docRef = await addDoc(collection(db, `users`), {
+        username: session.user.name,
+        userImg: session.user.image,
+        tag: session.user.tag
+      })
+      await updateDoc(doc(db, "users", docRef.id), {
+        userId: docRef.id,
+        following: [docRef.id]
+      })
+      
+      setUser({
         userId: docRef.id,
         username: session.user.name,
         userImg: session.user.image,
         tag: session.user.tag
-      }
-    })
-    setUser({
-      userId: docRef.id,
-      username: session.user.name,
-      userImg: session.user.image,
-      tag: session.user.tag
-    })
+      })
+      localStorage.setItem("userId", docRef.id)
+    }
     localStorage.setItem("userId", docRef.id)
     setAddNewUser(true);
   }

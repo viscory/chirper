@@ -11,6 +11,7 @@ import SidebarLink from './SidebarLink'
 const Sidebar = () => {
   const { data: session } = useSession()
   const router = useRouter()
+  if(typeof window === 'undefined') return null
   return (
     <div className='hidden sm:flex flex-col items-center xl:items-start xl:w-[340px] p-2 fixed h-full border-r border-gray-400 pr-0 xl:pr-8'>
       <div className='flex items-center justify-center w-14 h-14 hoverEffect p-0 xl:ml-24' onClick={()=>router.push('/')}>
@@ -31,11 +32,14 @@ const Sidebar = () => {
       {/* <button className='hidden xl:inline ml-auto bg-[#1d9bf0] text-white rounded-full w-52 h-[52px] text-lg font-bold hover:bg-[#1a8cd8]'>
         Tweet
       </button> */}
-      <div className='text-[#d9d9d9] flex items-center justify-center mt-auto hoverEffect xl:ml-auto xl:-mr-5 px-4 py-2' onClick={()=>signOut({callbackUrl: '/'})}>
-        <img src={session?.user.image} alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
+      <div className='text-[#d9d9d9] flex items-center justify-center mt-auto hoverEffect xl:ml-auto xl:-mr-5 px-4 py-2' onClick={()=>{
+        localStorage.clear();
+        signOut({callbackUrl: '/'})
+      }}>
+        <img src={typeof window !="undefined"&&localStorage.getItem("username")!=null?"https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg":session?.user.image} alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
         <div className='hidden xl:inline leading-5'>
-          <h4 className='font-bold'>{session?.user?.name}</h4>
-          <h4 className='text-[#6e767d]'>@{session?.user?.tag}</h4>
+          <h4 className='font-bold'>{typeof window !="undefined"&&localStorage.getItem("username")!=null?localStorage.getItem('username'):session?.user?.name}</h4>
+          <h4 className='text-[#6e767d]'>@{typeof window !="undefined"&&localStorage.getItem("tag")!=null?localStorage.getItem('tag'):session?.user?.tag}</h4>
         </div>
         <BsThreeDots className='h-5 hidden xl:inline ml-10'/>
       </div>

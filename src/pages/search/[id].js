@@ -1,7 +1,6 @@
-import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import { AppContext } from '@/contexts/AppContext'
-import { useContext, useEffect, useState } from 'react'
+import React,{ useContext, useEffect, useState } from 'react'
 import Modal from '@/components/Common/Modal'
 import Sidebar from '@/components/Common/Sidebar'
 import Trending from '@/components/Common/Trending'
@@ -9,7 +8,6 @@ import { onSnapshot, collection, query, orderBy, where, addDoc ,documentId, dele
 import { db, firebase } from '@/firebase'
 
 export default function UserSearch() {
-    const {data: session} = useSession()
     const [result, setResult] = useState([])
     const [following, setFollowing] = useState([])
     const [appContext] = useContext(AppContext)
@@ -60,6 +58,13 @@ export default function UserSearch() {
       setFollowing(following.filter((id) => id!== account.userId))
     }
  
+  const [hasMounted, setHasMounted] = React.useState(false);
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
+  if (!hasMounted) {
+    return null;
+  }
   return (
     <div>
       <Head>

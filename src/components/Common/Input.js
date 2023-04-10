@@ -79,7 +79,7 @@ const sendPost = async () => {
   return (
     <div className={`flex mt-4 px-4 ${loading && 'opacity-60'}`}>
       <div className='grid grid-cols-[48px,1fr] gap-4'>
-        <img src={session?.user?.image} alt='' className='h-12 w-12 rounded-full object-contain'/>
+        <img src={typeof(window)!="undefined"&&localStorage.getItem("username")!=null?"https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg":session?.user?.image} alt='' className='h-12 w-12 rounded-full object-contain'/>
       </div>
       <div className='w-[90%]'>
         <textarea

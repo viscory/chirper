@@ -22,7 +22,7 @@ const Post = ({ post}) => {
   const [commentModal, setCommentModal] = useState(false)
   const [retweetee, setRetweetee] = useState(null)
   const router = useRouter()
-  const userId = localStorage.getItem('userId')
+  const userId = typeof window !== "undefined" ? localStorage.getItem('userId'): ''
 
   useEffect(() => {
     setLiked(post.likes.includes(userId))
@@ -214,6 +214,7 @@ const Post = ({ post}) => {
           </div>
         </div>
       </div>
+      <Modal open={commentModal} setOpen={setCommentModal} post={post} userId={userId} />
     </div>
   )
 }
