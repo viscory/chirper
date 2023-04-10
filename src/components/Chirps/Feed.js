@@ -4,117 +4,36 @@ import { HiOutlineSparkles } from 'react-icons/hi'
 import Post from './Post'
 import { db } from '@/firebase'
 import Input from '../Common/Input'
-import { useSession } from "next-auth/react"
-import { AppContext } from '@/contexts/AppContext'
 
 const Feed = () => {
   const [posts, setPosts] = useState([])
-  const { data: session } = useSession()
-  const [appContext, setAppContext] = useContext(AppContext)
-  const [addNewUser, setAddNewUser] = useState(false)
   const [user, setUser] = useState(null)
+
   useEffect(() => {
-    if(session){
-      onSnapshot(
-        query(
-          collection(db, `users`), where("tag", "==", session?.user?.tag)
-        ),
-        (snapshot) => {
-          if(snapshot.docs.length > 0) {
-            setUser(snapshot.docs[0].data())
-            localStorage.setItem("userId", snapshot.docs[0].data().userId)
-            const followingList = snapshot.docs[0].data().following
-            console.log(followingList)
-            if(followingList !== undefined) {
-              onSnapshot(
-                query(
-                  collection(db, `posts`), where("userId", "in", followingList)
-                ),
-                (snapshot) => {
-                  console.log(snapshot.docs.map((doc) => doc.data()))
-                  setPosts(snapshot.docs.map((doc) => doc.data()).sort((a, b) => b.timestamp - a.timestamp))
-                }
-              )
-              setAddNewUser(true)
-            }
+    onSnapshot(
+      query(
+        collection(db, `users`), where("tag", "==", localStorage.getItem("tag"))
+      ),
+      (snapshot) => {
+        if(snapshot.docs.length > 0) {
+          setUser(snapshot.docs[0].data())
+          console.log(snapshot.docs[0].data())
+          localStorage.setItem("userId", snapshot.docs[0].data().userId)
+          const followingList = snapshot.docs[0].data().following
+          if(followingList !== undefined) {
+            onSnapshot(
+              query(
+                collection(db, `posts`), where("userId", "in", followingList)
+              ),
+              (snapshot) => {
+                setPosts(snapshot.docs.map((doc) => doc.data()).sort((a, b) => b.timestamp - a.timestamp))
+              }
+            )
           }
         }
-      )
-    }
-    else if(localStorage.getItem("userId")!== null) {
-      onSnapshot(
-        query(
-          collection(db, `users`), where("userId", "==", localStorage.getItem("userId"))
-        ),
-        (snapshot) => {
-          if(snapshot.docs.length > 0) {
-            setUser(snapshot.docs[0].data())
-            localStorage.setItem("userId", snapshot.docs[0].data().userId)
-            const followingList = snapshot.docs[0].data().following
-            console.log(followingList)
-            if(followingList !== undefined) {
-              onSnapshot(
-                query(
-                  collection(db, `posts`), where("userId", "in", followingList)
-                ),
-                (snapshot) => {
-                  console.log(snapshot.docs.map((doc) => doc.data()))
-                  setPosts(snapshot.docs.map((doc) => doc.data()).sort((a, b) => b.timestamp - a.timestamp))
-                }
-              )
-              setAddNewUser(true)
-            }
-          }
-        }
-      )
-    }
+      }
+    )
   }, [])
-
-
-  const addUserToDB = async () => {
-    if(localStorage.getItem('tag')!= null) {
-      const username = localStorage.getItem('username')
-      const tag = localStorage.getItem('tag')
-      const docRef = await addDoc(collection(db, `users`), {
-        username: username,
-        userImg: "https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg",
-        tag: tag,
-      })
-      await updateDoc(doc(db, "users", docRef.id), {
-        userId: docRef.id,
-        following: [docRef.id]
-      })
-      
-      setUser({
-        userId: docRef.id,
-        username: username,
-        userImg: "https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg",
-        tag: tag
-      })
-      localStorage.setItem("userId", docRef.id)
-    }
-    else{
-      const docRef = await addDoc(collection(db, `users`), {
-        username: session.user.name,
-        userImg: session.user.image,
-        tag: session.user.tag
-      })
-      await updateDoc(doc(db, "users", docRef.id), {
-        userId: docRef.id,
-        following: [docRef.id]
-      })
-      
-      setUser({
-        userId: docRef.id,
-        username: session.user.name,
-        userImg: session.user.image,
-        tag: session.user.tag
-      })
-      localStorage.setItem("userId", docRef.id)
-    }
-    localStorage.setItem("userId", docRef.id)
-    setAddNewUser(true);
-  }
 
   const updatePost = (singlePost) => {
     const update = onSnapshot(
@@ -132,6 +51,16 @@ const Feed = () => {
     );
     update();
   }
+  const [hasMounted, setHasMounted] = React.useState(false);
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
+  React.useEffect(() => {
+    console.log(posts);
+  }, [posts]);
+  if (!hasMounted) {
+    return null;
+  }
   return (
     <>
       
@@ -139,26 +68,13 @@ const Feed = () => {
         Home
         <HiOutlineSparkles/>
       </div>
-      {
-        addNewUser == false
-        ?(
-          <div className="text-center text-xl">
-            <div className="">Welcome to Chirper!</div>
-            <div className="px-3 py-1 bg-green-800 rounded-3xl w-fit mx-auto mt-2 cursor-pointer" onClick={()=>addUserToDB()}>Get Started</div>
-          </div>
-        )
-        :(
-          <>
-          <Input className='' user={user} />
-          {posts.map((post) => {
-              return(
-                <Post key={post.id} post={post} id={post.id} user={user} updatePost={updatePost} />
-              )
-            }
-          )}
-        </>
-        )
-      }
+      <Input className='' user={user} />
+      {posts.map((post) => {
+          return(
+            <Post key={post.id} post={post} id={post.id} user={user} updatePost={updatePost} />
+          )
+        }
+      )}
     </>
   )
 }

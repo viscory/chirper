@@ -1,5 +1,5 @@
 import React from 'react'
-import { signOut, useSession } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import { BiHash } from 'react-icons/bi'
 import { BsTwitter, BsBell, BsBookmark, BsThreeDots } from 'react-icons/bs'
 import { AiFillHome, AiOutlineInbox, AiOutlineUser } from 'react-icons/ai'
@@ -9,7 +9,6 @@ import { useRouter } from 'next/router'
 import SidebarLink from './SidebarLink'
 
 const Sidebar = () => {
-  const { data: session } = useSession()
   const router = useRouter()
   if(typeof window === 'undefined') return null
   return (
@@ -34,12 +33,12 @@ const Sidebar = () => {
       </button> */}
       <div className='text-[#d9d9d9] flex items-center justify-center mt-auto hoverEffect xl:ml-auto xl:-mr-5 px-4 py-2' onClick={()=>{
         localStorage.clear();
-        signOut({callbackUrl: '/'})
+        signOut({callbackUrl: '/login'})
       }}>
-        <img src={typeof window !="undefined"&&localStorage.getItem("username")!=null?"https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg":session?.user.image} alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
+        <img src="https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg" alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
         <div className='hidden xl:inline leading-5'>
-          <h4 className='font-bold'>{typeof window !="undefined"&&localStorage.getItem("username")!=null?localStorage.getItem('username'):session?.user?.name}</h4>
-          <h4 className='text-[#6e767d]'>@{typeof window !="undefined"&&localStorage.getItem("tag")!=null?localStorage.getItem('tag'):session?.user?.tag}</h4>
+          <h4 className='font-bold'>{localStorage.getItem('username')}</h4>
+          <h4 className='text-[#6e767d]'>@{localStorage.getItem('tag')}</h4>
         </div>
         <BsThreeDots className='h-5 hidden xl:inline ml-10'/>
       </div>

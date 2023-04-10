@@ -10,7 +10,6 @@ import { db, firebase } from '@/firebase'
 export default function UserSearch() {
     const [result, setResult] = useState([])
     const [following, setFollowing] = useState([])
-    const [appContext] = useContext(AppContext)
     const [userId, setUserId] = useState("")
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -25,7 +24,7 @@ export default function UserSearch() {
                   let res = snapshot.docs.map((data) => data.data())
                   setResult(res)
                   onSnapshot(
-                      query(collection(db, `users`), where(documentId(), "==", userId)),
+                      query(collection(db, `users`), where("userId", "==", userId)),
                       (snapshot) => {
                           let following = snapshot.docs[0].data().following
                           console.log(following)
@@ -45,10 +44,17 @@ export default function UserSearch() {
 
     const followUser = async (account) => {
       console.log(account)
-      await updateDoc(doc(db, "users", userId), {
-        following: [...following, account.userId]
-      })
-      setFollowing([...following, account.userId])
+      onSnapshot(
+        query(
+          collection(db, `users`), where("userId", "==", userId)
+        ),
+        async (snapshot) => {
+          await updateDoc(doc(db, "users", snapshot.docs[0].id), {
+            following: [...following, account.userId]
+          })
+          setFollowing([...following, account.userId])
+        }
+      )
     }
 
     const unfollowUser = async (account) => {
@@ -56,6 +62,18 @@ export default function UserSearch() {
         following: following.filter((id) => id!== account.userId)
       })
       setFollowing(following.filter((id) => id!== account.userId))
+      onSnapshot(
+        query(
+          collection(db, `users`), where("userId", "==", userId)
+        ),
+        async (snapshot) => {
+          
+      await updateDoc(doc(db, "users", snapshot.docs[0].id), {
+        following: following.filter((id) => id!== account.userId)
+        })
+        setFollowing(following.filter((id) => id!== account.userId))
+        }
+      )
     }
  
   const [hasMounted, setHasMounted] = React.useState(false);

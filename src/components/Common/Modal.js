@@ -5,8 +5,6 @@ import { AiOutlineGif, AiOutlineClose, AiFillCloseCircle } from "react-icons/ai"
 import { RiBarChart2Line } from "react-icons/ri"
 import { IoCalendarNumberOutline } from "react-icons/io5"
 import { HiOutlineLocationMarker } from "react-icons/hi"
-import { useSession } from 'next-auth/react'
-import { AppContext } from '@/contexts/AppContext'
 import Moment from 'react-moment'
 import { addDoc, collection, serverTimestamp, updateDoc, doc } from 'firebase/firestore'
 import { db } from '@/firebase'
@@ -16,7 +14,6 @@ import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 
 const Modal = ({open, setOpen, post}) => {
-    const {data: session} = useSession()
     const [input, setInput] = useState('')
     const [selectedFile, setSelectedFile] = useState(null)
     const [showEmojis, setShowEmojis] = useState(false)
@@ -38,9 +35,9 @@ const Modal = ({open, setOpen, post}) => {
     }
     const sendReply = async () => {
         const docRef = await addDoc(collection(db, `posts`, post.id, "replies"), {
-            username: localStorage.getItem('username')!=null?localStorage.getItem('username'):session.user.name,
-            userImg: localStorage.getItem('username')!=null?"https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg":session.user.image,
-            tag: localStorage.getItem('tag')!=null?localStorage.getItem('tag'):session.user.tag,
+            username: localStorage.getItem('username'),
+            userImg: "https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg",
+            tag: localStorage.getItem('tag'),
             text: input,
             time: serverTimestamp()
         })
