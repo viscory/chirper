@@ -12,9 +12,9 @@ const Sidebar = () => {
   const router = useRouter()
   if(typeof window === 'undefined') return null
   return (
-    <div className='hidden sm:flex flex-col items-center xl:items-start xl:w-[340px] p-2 fixed h-full border-r border-gray-400 pr-0 xl:pr-8'>
+    <div className='hidden sm:flex flex-col items-center xl:items-start xl:w-[340px] p-2 fixed h-full border-r border-gray-400 pr-0 xl:pr-8 bg-white dark:bg-black text-black dark:text-white'>
       <div className='flex items-center justify-center w-14 h-14 hoverEffect p-0 xl:ml-24' onClick={()=>router.push('/')}>
-        <BsTwitter className='text-white text-[34px]'/>
+        <BsTwitter className='text-blue-400 dark:text-white text-[34px]'/>
       </div>
       <div className='space-y-2 mt-4 mb-2.5 xl:ml-24'>
         <div onClick={()=>router.push('/')}>
@@ -37,7 +37,7 @@ const Sidebar = () => {
       }}>
         <img src="https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg" alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
         <div className='hidden xl:inline leading-5'>
-          <h4 className='font-bold'>{localStorage.getItem('username')}</h4>
+          <h4 className='font-bold text-black dark:text-white'>{localStorage.getItem('username')}</h4>
           <h4 className='text-[#6e767d]'>@{localStorage.getItem('tag')}</h4>
         </div>
         <BsThreeDots className='h-5 hidden xl:inline ml-10'/>

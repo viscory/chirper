@@ -64,9 +64,11 @@ const Feed = () => {
   return (
     <>
       
-      <div className='sticky top-0 bg-black flex justify-between font-medium text-xl px-4 py-2'>
+      <div className='sticky top-0 bg-white dark:bg-black flex justify-between font-medium text-xl px-4 py-2 text-black dark:text-white'>
         Home
-        <HiOutlineSparkles/>
+        <div className="my-auto">
+          <HiOutlineSparkles />
+        </div>
       </div>
       <Input className='' user={user} />
       {posts.map((post) => {
