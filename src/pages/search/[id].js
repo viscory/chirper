@@ -12,6 +12,7 @@ export default function UserSearch() {
     const [result, setResult] = useState([])
     const [following, setFollowing] = useState([])
     const [userId, setUserId] = useState("")
+    const [userObjectId, setUserObjectId] = useState('')
     const router = useRouter()
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -25,14 +26,6 @@ export default function UserSearch() {
               (snapshot) => {
                   let res = snapshot.docs.map((data) => data.data())
                   setResult(res)
-                  onSnapshot(
-                      query(collection(db, `users`), where("userId", "==", userId)),
-                      (snapshot) => {
-                          let following = snapshot.docs[0].data().following
-                          console.log(following)
-                          setFollowing(following)
-                      }
-                  )
               }
           )
 
@@ -41,41 +34,33 @@ export default function UserSearch() {
     
 
     useEffect(() => {
-      console.log(result)
-    }, [result, following])
+      if (userId) {
+
+        setUserId(localStorage.getItem("userId"))
+      
+        onSnapshot(
+          query(collection(db, `users`), where("userId", "==", userId)),
+          (snapshot) => {
+              let following = snapshot.docs[0].data().following
+              console.log(following)
+              setFollowing(following)
+              setUserObjectId(snapshot.docs[0].id)
+          }
+        )
+      }
+    }, [result])
 
     const followUser = async (account) => {
-      console.log(account)
-      onSnapshot(
-        query(
-          collection(db, `users`), where("userId", "==", userId)
-        ),
-        async (snapshot) => {
-          await updateDoc(doc(db, "users", snapshot.docs[0].id), {
-            following: [...following, account.userId]
-          })
-          setFollowing([...following, account.userId])
-        }
-      )
+      console.log(userObjectId)
+      await updateDoc(doc(db, "users", userObjectId), {
+        following: [...following, account.userId]
+      })
     }
 
     const unfollowUser = async (account) => {
-      await updateDoc(doc(db, "users", userId), {
+      await updateDoc(doc(db, "users", userObjectId), {
         following: following.filter((id) => id!== account.userId)
       })
-      setFollowing(following.filter((id) => id!== account.userId))
-      onSnapshot(
-        query(
-          collection(db, `users`), where("userId", "==", userId)
-        ),
-        async (snapshot) => {
-          
-      await updateDoc(doc(db, "users", snapshot.docs[0].id), {
-        following: following.filter((id) => id!== account.userId)
-        })
-        setFollowing(following.filter((id) => id!== account.userId))
-        }
-      )
     }
  
   const [hasMounted, setHasMounted] = React.useState(false);
