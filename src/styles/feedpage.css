@@ -1,6 +1,7 @@
 .post_container {
-    @apply mt-4 border-t border-gray-500 px-4 pt-6 pb-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 text-black dark:text-white;
+    @apply mt-4 border-t border-gray-500 px-4 pt-6 pb-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 text-black dark:text-white relative;
 }
+
 
 .post_margin {
     @apply grid grid-cols-[48px,1fr] gap-4
@@ -38,3 +39,22 @@
     @apply text-[#d9d9d9] mt-0.5 max-w-lg text-[15px] sm:text-base;
 }
 
+.blurred_content_container {
+    @apply relative;
+}
+
+.blurred_content {
+    @apply filter blur-[10px] opacity-50;
+}
+
+.warning_msg {
+    @apply relative mt-0 p-4 text-center bg-white dark:bg-black rounded-lg;
+}
+
+.warning_msg p {
+    @apply mb-2 text-sm;
+}
+
+.warning_msg button {
+    @apply px-4 py-1 rounded border border-blue-600 text-blue-600 font-semibold dark:border-blue-300 dark:text-blue-300;
+}

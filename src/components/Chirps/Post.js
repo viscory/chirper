@@ -115,8 +115,16 @@ const Post = ({ post}) => {
     })
   }
 
+    // Add state for showing blurred content
+    const [showBlurredContent, setShowBlurredContent] = useState(false);
+
+    // Function to toggle blurred content visibility
+    const toggleBlurredContent = () => {
+      setShowBlurredContent(!showBlurredContent);
+    }
+
   return (
-    <div className='post_container' onClick={() => router.push(`/chirps/${post.id}`)}>
+    <div className='post_container'>
       {
         retweetee?(
           <div className="ml-3 mb-2 text-xs text-gray-300 flex">
@@ -141,11 +149,34 @@ const Post = ({ post}) => {
               </p>
             </div>
           </div>
-          <p className="my-2 text-lg">{post?.text}</p>
-          <img
-            className='post_image'
-            src={post?.image}
-            alt="" />
+          <div className='post_content_area'>
+          {
+            (post.isSPAM || post.isNSFW) && !showBlurredContent ? (
+              <div className="blurred_content_container"  onClick={() => router.push(`/chirps/${post.id}`)}>
+                <div className="blurred_content">
+                  <p className="my-2 text-lg">{post?.text}</p>
+                  <img
+                    className='post_image'
+                    src={post?.image}
+                    alt="" />
+                </div>
+                <div className="warning_msg">
+                  <p>This content may contain inappropriate material. Click the button below to view.</p>
+                  <button onClick={toggleBlurredContent}>Show Content</button>
+                </div>
+              </div>
+            ) : (
+              <div className='post_content' onClick={() => router.push(`/chirps/${post.id}`)}>
+                <p className="my-2 text-lg">{post?.text}</p>
+                <img
+                  className='post_image'
+                  src={post?.image}
+                  alt={post?.image_alt} />
+              </div>
+
+            )
+          }
+          </div>
           <div className='post_action_bar'>
             <div className='flex gap-1 items-center'>
             <div className='post_action_button'>
