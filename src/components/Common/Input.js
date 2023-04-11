@@ -10,6 +10,7 @@ import Picker from '@emoji-mart/react'
 import { addDoc, collection, doc, serverTimestamp, updateDoc, setDoc, arrayUnion } from 'firebase/firestore'
 import { db, storage } from '../../firebase'
 import { getDownloadURL, ref, uploadString } from 'firebase/storage'
+import { AkismetClient } from 'akismet-api'
 
 const Input = ({user}) => {
   const [loading, setLoading] = useState(false)
@@ -17,6 +18,9 @@ const Input = ({user}) => {
   const [selectedFile, setSelectedFile] = useState(null)
   const [showEmojis, setShowEmojis] = useState(false)
   const [appContext, setAppContext] = useContext(AppContext)
+  const [get_ip, setIp] = useState()
+  const [isNSFW, setIsNSFW] = useState(false);
+  const [isSPAM, setIsSPAM] = useState(false);
   const userId = localStorage.getItem('userId')
   const addImageToPost = (e) => {
     const reader = new FileReader()
@@ -34,11 +38,45 @@ const Input = ({user}) => {
     let emoji = String.fromCodePoint(...codesArray)
     setInput(input + emoji)
 }
+  const key = '8ae38d485caa'
+  const blog = 'https://zepto.page'
+  const client = new AkismetClient({ key, blog })
+
+
+  const getIp = async () => {
+    // Connect ipapi.co with fetch()
+    const response = await fetch('https://ipapi.co/json/')
+    const data = await response.json()
+    // Set the IP address to the constant `ip`
+    setIp(data.ip)
+  }
+
+  // Run `getIP` function above just once when the page is rendered
+  React.useEffect(() => {
+    getIp()
+  }, [])
 
 const sendPost = async () => {
     if (loading)
         return
     setLoading(true)
+  
+    const comment = {
+      ip: get_ip,
+      content: input
+    }
+  
+    try {
+      const isSPAM = await client.checkSpam(comment)
+    
+      if (isSPAM) console.log('OMG Spam!')
+      else console.log('Totally not spam')
+    } catch (err) {
+      console.error('Something went wrong:', err.message)
+    }
+
+    setIsSPAM(isSPAM)
+
     const docRef = await addDoc(collection(db, 'posts'), {
       username: user.username,
       userImg: user.userImg,
@@ -47,7 +85,9 @@ const sendPost = async () => {
       text: input,
       likes: [],
       dislikes: [],
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      isSPAM: isSPAM,
+      isNSFW: isNSFW
     })
     await updateDoc(doc(db, "posts", docRef.id), {
       id: docRef.id,
@@ -115,6 +155,18 @@ const sendPost = async () => {
               <BsEmojiSmile className='cursor-pointer' onClick={() => setShowEmojis(!showEmojis)} />
               <IoCalendarNumberOutline />
               <HiOutlineLocationMarker />
+              <button
+                className={`${
+                  isNSFW ? "text-white" : "text-white"
+                } text-xs font-semibold dark:border-blue-300 flex items-center justify-center`}
+                onClick={() => setIsNSFW(!isNSFW)}
+              >
+                {
+                  isNSFW ? "NSFW" : "SFW"
+                }
+              </button>
+
+
               </div>
               <button
                   className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
