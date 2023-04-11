@@ -9,11 +9,11 @@ import { addDoc, collection, doc, updateDoc } from '@firebase/firestore'
 const EmailSignup = () => {
     const [hasMounted, setHasMounted] = React.useState(false);
     const router = useRouter()
-    const [username, setUsername] = useState('admin')
-    const [tag, setTag] = useState('admin')
-    const [email, setEmail] = useState('admin@chriper.com')
-    const [password, setPassword] = useState('123456')
-    const [password2, setPassword2] = useState('123456')
+    const [username, setUsername] = useState('')
+    const [tag, setTag] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [password2, setPassword2] = useState('')
     const [error, setError] = useState('')
     const [valid, setValid] = useState(false)
     useEffect(() => {
