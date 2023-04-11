@@ -3,6 +3,7 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react';
 import Talk from 'talkjs';
+import {AiOutlineArrowLeft} from "react-icons/ai";
 
 export default function ChatRoom() {
   const chatboxEl = useRef();
@@ -116,6 +117,7 @@ export default function ChatRoom() {
       </Head>
 
       <main className='text-black dark:text-white bg-white dark:bg-black h-screen'>
+        <div className="absolute top-4 left-4 cursor-pointer" onClick={()=>history.back()}><AiOutlineArrowLeft className="w-7 h-7" /></div>
         <div className="text-2xl text-center text-black dark:text-white py-10">Your chatroom</div>
         <div className="w-screen">
           <div ref={chatboxEl} className="h-[500px] mx-auto w-fit"></div>
