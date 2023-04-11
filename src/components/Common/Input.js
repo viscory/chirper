@@ -157,7 +157,7 @@ const sendPost = async () => {
               <HiOutlineLocationMarker />
               <button
                 className={`${
-                  isNSFW ? "text-white" : "text-white"
+                  isNSFW ? "text-[#1d9bf0]" : "text-[#1d9bf0]"
                 } text-xs font-semibold dark:border-blue-300 flex items-center justify-center`}
                 onClick={() => setIsNSFW(!isNSFW)}
               >
