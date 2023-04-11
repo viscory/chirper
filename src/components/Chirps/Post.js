@@ -151,9 +151,9 @@ const Post = ({ post}) => {
           </div>
           <div className='post_content_area'>
           {
-            (post.isSPAM || post.isNSFW) && !showBlurredContent ? (
-              <div className="blurred_content_container"  onClick={() => router.push(`/chirps/${post.id}`)}>
-                <div className="blurred_content">
+            (post?.isSPAM || post?.isNSFW) && !showBlurredContent ? (
+              <div className="blurred_content_container" >
+                <div className="blurred_content"  onClick={() => router.push(`/chirps/${post.id}`)}>
                   <p className="my-2 text-lg">{post?.text}</p>
                   <img
                     className='post_image'
@@ -166,12 +166,22 @@ const Post = ({ post}) => {
                 </div>
               </div>
             ) : (
-              <div className='post_content' onClick={() => router.push(`/chirps/${post.id}`)}>
-                <p className="my-2 text-lg">{post?.text}</p>
-                <img
-                  className='post_image'
-                  src={post?.image}
-                  alt={post?.image_alt} />
+              <div className='post_content_container'>
+                <div className='post_content' onClick={() => router.push(`/chirps/${post.id}`)}>
+                  <p className="my-2 text-lg">{post?.text}</p>
+                  <img
+                    className='post_image'
+                    src={post?.image}
+                    alt={post?.image_alt} />
+                </div>
+                {(post?.isSPAM || post?.isNSFW) && showBlurredContent ? (
+                  <div className="warning_msg">
+                  <p>Click the button below to hide the content again.</p>
+                  <button onClick={toggleBlurredContent}>Hide Content</button>
+                </div>
+                ) : (
+                  null
+                )}
               </div>
 
             )
