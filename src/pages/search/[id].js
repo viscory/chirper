@@ -88,13 +88,24 @@ export default function UserSearch() {
                           <img src={account.userImg} className="rounded-full w-7 h-7 mr-4 my-auto" />
                           <div className="text-lg mr-4 my-auto">{account.username}</div>
                           <div className="text-lg my-auto">@{account.tag}</div>
-                          <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer" onClick={()=>router.push(`/chat/${userId}/${account.userId}`)}>Chat</div>
                           {
+                            
                               account.userId === userId
                               ?(null)
                               :following.includes(account.userId)
-                              ?(<div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>unfollowUser(account)}>Unfollow</div>)
-                              :(<div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>followUser(account)}>Follow</div>)
+                              ?(
+                                <>
+                                  
+                                <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer" onClick={()=>router.push(`/chat/${userId}/${account.userId}`)}>Chat</div>
+                                <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>unfollowUser(account)}>Unfollow</div>
+                                </>
+                              )
+                              :(
+                                <>
+                                  <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer" onClick={()=>router.push(`/chat/${userId}/${account.userId}`)}>Chat</div>
+                                  <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>followUser(account)}>Follow</div>
+                                </>
+                              )
                           }
                           
                       </div>
