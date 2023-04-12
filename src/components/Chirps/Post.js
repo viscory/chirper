@@ -135,7 +135,7 @@ const Post = ({ post}) => {
         :null
       }
       <div className='post_margin'>
-        <div>
+        <div className="avatar_area" onClick={() => router.push(`/profile/${post.tag}`)}>
           <img className='post_avatar' src={post?.userImg} alt="" />
         </div>
         <div>

@@ -10,6 +10,7 @@ import SidebarLink from './SidebarLink'
 
 const Sidebar = () => {
   const router = useRouter()
+  const user_tag = localStorage.getItem("tag")
   if(typeof window === 'undefined') return null
   return (
     <div className='hidden sm:flex flex-col items-center xl:items-start xl:w-[340px] p-2 fixed h-full border-r border-gray-400 pr-0 xl:pr-8 bg-white dark:bg-black text-black dark:text-white'>
@@ -25,7 +26,13 @@ const Sidebar = () => {
         <SidebarLink text='Messages' Icon={AiOutlineInbox}/>
         {/* <SidebarLink text='Bookmarks' Icon={BsBookmark}/>
         <SidebarLink text='List' Icon={HiOutlineClipboardList}/> */}
-        <SidebarLink text='Profile' Icon={AiOutlineUser}/>
+
+        {user_tag ?
+        <div onClick={() => router.push(`/profile/${user_tag}`)}>
+          <SidebarLink text='Profile' Icon={AiOutlineUser}/>
+        </div> : null
+        }
+        
         <SidebarLink text='More' Icon={HiOutlineDotsCircleHorizontal}/>
       </div>
       {/* <button className='hidden xl:inline ml-auto bg-[#1d9bf0] text-white rounded-full w-52 h-[52px] text-lg font-bold hover:bg-[#1a8cd8]'>
