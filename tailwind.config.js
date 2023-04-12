@@ -9,7 +9,10 @@ module.exports = {
   ],
   darkMode: 'class',
   theme: {
-    extend: {},
+    borderColor: (theme) => ({
+      ...theme('colors'),
+      'custom-gray': 'rgb(83, 100, 113)',
+    }),
   },
   plugins: [],
 }

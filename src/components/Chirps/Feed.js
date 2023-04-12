@@ -64,7 +64,7 @@ const Feed = () => {
   return (
     <>
       
-      <div className='sticky top-0 bg-white dark:bg-black flex justify-between font-medium text-xl px-4 py-2 z-10 text-black dark:text-white'>
+      <div className='top-bar'>
         Home
         <div className="my-auto">
           <HiOutlineSparkles />

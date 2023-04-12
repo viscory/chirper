@@ -104,7 +104,7 @@ export default function UserSearch() {
                           ?(
                             <>
                               
-                            <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                            <div className="action-button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 router.push(`/chat/${userId}/${account.userId}`);
@@ -112,7 +112,7 @@ export default function UserSearch() {
                             >
                               Chat
                             </div> 
-                            <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={(e) => {
+                            <div className="action-button" onClick={(e) => {
                               e.stopPropagation();
                               unfollowUser(account);
                               }}>Unfollow</div>
@@ -120,7 +120,7 @@ export default function UserSearch() {
                           )
                           :(
                             <>
-                            <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                            <div className="action-button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 router.push(`/chat/${userId}/${account.userId}`);
@@ -128,7 +128,7 @@ export default function UserSearch() {
                             >
                               Chat
                             </div>  
-                              <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={(e) => {
+                              <div className="action-button" onClick={(e) => {
                               e.stopPropagation();
                               followUser(account)}}>Follow</div>
                             </>

@@ -109,7 +109,7 @@ const Profile = () => {
     <>
       {profile_user && (
         <>
-          <div className='sticky top-0 bg-black flex items-center gap-4 z-10 font-medium text-[20px] px-4 py-2'>
+          <div className='top-bar'>
             <BsArrowLeft className='cursor-pointer' onClick={() => router.push(`/`)} />
             Profile
           </div>
@@ -117,18 +117,18 @@ const Profile = () => {
           <div className="profile-header">
             <img src={profile_user.userImg} alt={`${profile_user.username}'s profile`} className="profile-image" />
             <h2 className="profile-name">{profile_user.username}</h2>
-            <p className="profile-tag">{profile_user.tag}</p>
+            <p className="profile-tag">@{profile_user.tag}</p>
             <div className='post_action_bar'>
               {profile_user.userId === userId ? (
                 <div
-                className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
+                className="action-button"
                 onClick={() => router.push(`/settings/${profile_tag}`)}
               >
                 Edit Profile
               </div>
               ) :
                 <div
-                  className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                  className="action-button"
                   onClick={(e) => {
                     e.stopPropagation();
                     router.push(`/chat/${userId}/${profile_user.userId}`);
@@ -141,7 +141,7 @@ const Profile = () => {
                 null
               ) : following.includes(profile_user.userId) ? (
                 <div
-                  className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
+                  className="action-button"
                   onClick={(e) => {
                     e.stopPropagation();
                     unfollowUser(profile_user);
@@ -151,7 +151,7 @@ const Profile = () => {
                 </div>
               ) : (
                 <div
-                  className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
+                  className="action-button"
                   onClick={(e) => {
                     e.stopPropagation();
                     followUser(profile_user);
