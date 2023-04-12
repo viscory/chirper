@@ -179,7 +179,7 @@ const sendPost = async () => {
       )}
 
       {showEmojis && (
-          <div className='absolute mt-[10px] -ml-[40px] max-w-[320px] rounded-[20px]'>
+          <div className='absolute mt-[10px] -ml-[40px] max-w-[320px] rounded-[20px] z-10'>
               <Picker
                   onEmojiSelect={addEmoji}
                   data={data}
