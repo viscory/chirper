@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { BsChat } from "react-icons/bs"
 import { FaRetweet } from "react-icons/fa"
-import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from 'react-icons/ai'
+import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike, RiBarChart2Line} from 'react-icons/ai'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import Moment from 'react-moment'
 import Modal from '@/components/Common/Modal'
 import { db } from "@/firebase"
 import { useRouter } from 'next/router'
 import { collection, deleteDoc, doc, onSnapshot, query, updateDoc, addDoc, where } from 'firebase/firestore'
-
+import numeral from "numeral"
 
 const Post = ({ post}) => {
   const [dislikes, setDislikes] = useState([])
@@ -193,7 +193,7 @@ const Post = ({ post}) => {
                 {
                   post.retweeteeId?null:<BsChat className='h-5 w-5' onClick={(openModal)} />
                 }
-                {comments.length > 0 && (<span className='text-sm ml-2'>{comments.length}</span>)}
+                {comments.length > 0 && (<span className='text-sm ml-2'>{numeral(comments.length).format("0.[0]a")}</span>)}
                 </div>
             </div>
               
@@ -228,7 +228,7 @@ const Post = ({ post}) => {
                         <AiOutlineLike className='hoverEffect w-7 h-7 p-1' />
                     </div>
                 }
-                {likes.length > 0 && (<span className={`${liked && "text-green-700"} text-sm`}>{likes.length}</span>)}
+                {likes.length > 0 && (<span className={`${liked && "text-green-700"} text-sm`}>{numeral(likes.length).format("0.[0]a")}</span>)}
             </div>
             <div className='flex gap-1 items-center'
               onClick={(e) => {
@@ -246,8 +246,14 @@ const Post = ({ post}) => {
                         <AiOutlineDislike className='hoverEffect w-7 h-7 p-1' />
                     </div>
                 }
-              {dislikes.length > 0 && (<span className={`${disliked && "text-red-700"} text-sm`}>{dislikes.length}</span>)}
+              {dislikes.length > 0 && (<span className={`${disliked && "text-red-700"} text-sm`}>{numeral(dislikes.length).format("0.[0]a")}</span>)}
             </div>
+            <div className='flex gap-1 items-center'>
+              {post?.views > 1 && (<span className='text-sm mr-2'>{numeral(post?.views).format("0.[0]a")} views</span>)}
+              {post?.views == 1 && (<span className='text-sm mr-2'>{numeral(post?.views).format("0.[0]a")} view</span>)}
+              
+            </div>
+
           </div>
         </div>
       </div>
