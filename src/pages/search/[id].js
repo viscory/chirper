@@ -12,6 +12,7 @@ export default function UserSearch() {
     const [result, setResult] = useState([])
     const [following, setFollowing] = useState([])
     const [userId, setUserId] = useState("")
+    const [userObjectId, setUserObjectId] = useState('')
     const router = useRouter()
     const search_key_word = window.location.pathname.split("/")[2]
     
@@ -27,14 +28,6 @@ export default function UserSearch() {
               (snapshot) => {
                   let res = snapshot.docs.map((data) => data.data())
                   setResult(res)
-                  onSnapshot(
-                      query(collection(db, `users`), where("userId", "==", userId)),
-                      (snapshot) => {
-                          let following = snapshot.docs[0].data().following
-                          console.log(following)
-                          setFollowing(following)
-                      }
-                  )
               }
           )
 
@@ -43,41 +36,33 @@ export default function UserSearch() {
     
 
     useEffect(() => {
-      console.log(result)
-    }, [result, following])
+      if (userId) {
+
+        setUserId(localStorage.getItem("userId"))
+      
+        onSnapshot(
+          query(collection(db, `users`), where("userId", "==", userId)),
+          (snapshot) => {
+              let following = snapshot.docs[0].data().following
+              console.log(following)
+              setFollowing(following)
+              setUserObjectId(snapshot.docs[0].id)
+          }
+        )
+      }
+    }, [result])
 
     const followUser = async (account) => {
-      console.log(account)
-      onSnapshot(
-        query(
-          collection(db, `users`), where("userId", "==", userId)
-        ),
-        async (snapshot) => {
-          await updateDoc(doc(db, "users", snapshot.docs[0].id), {
-            following: [...following, account.userId]
-          })
-          setFollowing([...following, account.userId])
-        }
-      )
+      console.log(userObjectId)
+      await updateDoc(doc(db, "users", userObjectId), {
+        following: [...following, account.userId]
+      })
     }
 
     const unfollowUser = async (account) => {
-      await updateDoc(doc(db, "users", userId), {
+      await updateDoc(doc(db, "users", userObjectId), {
         following: following.filter((id) => id!== account.userId)
       })
-      setFollowing(following.filter((id) => id!== account.userId))
-      onSnapshot(
-        query(
-          collection(db, `users`), where("userId", "==", userId)
-        ),
-        async (snapshot) => {
-          
-      await updateDoc(doc(db, "users", snapshot.docs[0].id), {
-        following: following.filter((id) => id!== account.userId)
-        })
-        setFollowing(following.filter((id) => id!== account.userId))
-        }
-      )
     }
  
   const [hasMounted, setHasMounted] = React.useState(false);
@@ -112,38 +97,43 @@ export default function UserSearch() {
                       />
                       <div className="text-lg mr-4 my-auto">{account.username}</div>
                       <div className="text-lg my-auto">@{account.tag}</div>
-                      <div
-                        className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/chat/${userId}/${account.userId}`);
-                        }}
-                      >
-                        Chat
-                      </div>
-                      {account.userId === userId ? (
-                        null
-                      ) : following.includes(account.userId) ? (
-                        <div
-                          className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            unfollowUser(account);
-                          }}
-                        >
-                          Unfollow
-                        </div>
-                      ) : (
-                        <div
-                          className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            followUser(account);
-                          }}
-                        >
-                          Follow
-                        </div>
-                      )}
+                      {
+                          account.userId === userId
+                          ?(null)
+                          :following.includes(account.userId)
+                          ?(
+                            <>
+                              
+                            <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/chat/${userId}/${account.userId}`);
+                              }}
+                            >
+                              Chat
+                            </div> 
+                            <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={(e) => {
+                              e.stopPropagation();
+                              unfollowUser(account);
+                              }}>Unfollow</div>
+                            </>
+                          )
+                          :(
+                            <>
+                            <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/chat/${userId}/${account.userId}`);
+                              }}
+                            >
+                              Chat
+                            </div>  
+                              <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={(e) => {
+                              e.stopPropagation();
+                              followUser(account)}}>Follow</div>
+                            </>
+                          )
+                            }
                     </div>
                   );
                 })
