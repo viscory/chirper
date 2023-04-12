@@ -14,6 +14,8 @@ export default function UserSearch() {
     const [userId, setUserId] = useState("")
     const [userObjectId, setUserObjectId] = useState('')
     const router = useRouter()
+    const search_key_word = window.location.pathname.split("/")[2]
+    
     useEffect(() => {
         if (typeof window !== "undefined") {
 
@@ -22,7 +24,7 @@ export default function UserSearch() {
         }
         if(userId){
           onSnapshot(
-              query(collection(db, `users`), where("tag", "==", window.location.pathname.split("/")[2])),
+              query(collection(db, `users`), where("tag", "==", search_key_word)),
               (snapshot) => {
                   let res = snapshot.docs.map((data) => data.data())
                   setResult(res)
@@ -81,36 +83,65 @@ export default function UserSearch() {
         <Sidebar/>
         <div className='flex gap-6 text-black dark:text-white'>
           <div className='sm:ml-20 xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-800 dark:border-gray-400 p-2'>
-            {
-              result.map(((account) => {
-                  return(
-                      <div className="border-b-2 border-gray-800 dark:border-gray-400 py-3 flex">
-                          <img src={account.userImg} className="rounded-full w-7 h-7 mr-4 my-auto" />
-                          <div className="text-lg mr-4 my-auto">{account.username}</div>
-                          <div className="text-lg my-auto">@{account.tag}</div>
-                          {
-                            
-                              account.userId === userId
-                              ?(null)
-                              :following.includes(account.userId)
-                              ?(
-                                <>
-                                  
-                                <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer" onClick={()=>router.push(`/chat/${userId}/${account.userId}`)}>Chat</div>
-                                <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>unfollowUser(account)}>Unfollow</div>
-                                </>
-                              )
-                              :(
-                                <>
-                                  <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer" onClick={()=>router.push(`/chat/${userId}/${account.userId}`)}>Chat</div>
-                                  <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={()=>followUser(account)}>Follow</div>
-                                </>
-                              )
-                          }
-                          
-                      </div>
-                  )
-              }))
+          {
+              result.length > 0 ? (
+                result.map((account) => {
+                  return (
+                    <div
+                      className="border-b-2 border-gray-800 dark:border-gray-400 py-3 flex cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900"
+                      onClick={() => router.push(`/profile/${account.tag}`)}
+                    >
+                      <img
+                        src={account.userImg}
+                        className="rounded-full w-7 h-7 mr-4 my-auto"
+                      />
+                      <div className="text-lg mr-4 my-auto">{account.username}</div>
+                      <div className="text-lg my-auto">@{account.tag}</div>
+                      {
+                          account.userId === userId
+                          ?(null)
+                          :following.includes(account.userId)
+                          ?(
+                            <>
+                              
+                            <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/chat/${userId}/${account.userId}`);
+                              }}
+                            >
+                              Chat
+                            </div> 
+                            <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={(e) => {
+                              e.stopPropagation();
+                              unfollowUser(account);
+                              }}>Unfollow</div>
+                            </>
+                          )
+                          :(
+                            <>
+                            <div className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/chat/${userId}/${account.userId}`);
+                              }}
+                            >
+                              Chat
+                            </div>  
+                              <div className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer" onClick={(e) => {
+                              e.stopPropagation();
+                              followUser(account)}}>Follow</div>
+                            </>
+                          )
+                            }
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-lg text-center py-4">
+                  No accounts found.
+                </div>
+              )
             }
           </div>
           <Trending />

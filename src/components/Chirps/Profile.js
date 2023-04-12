@@ -1,18 +1,42 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { onSnapshot, collection, query, orderBy, where, addDoc, updateDoc, doc, arrayUnion,  documentId, or } from 'firebase/firestore'
-import { HiOutlineSparkles } from 'react-icons/hi'
 import { BsArrowLeft } from "react-icons/bs"
 import Post from './Post'
 import { db } from '@/firebase'
-import Input from '../Common/Input'
 import { useRouter } from 'next/router';
 
 const Profile = () => {
+  const router = useRouter()
   const [posts, setPosts] = useState([])
+  const [following, setFollowing] = useState([])
   const [profile_user, setProfileUser] = useState(null)
   const [dataFetched, setDataFetched] = useState(false);
   const [user, setUser] = useState(null)
+  const [userId, setUserId] = useState("")
   const profile_tag = window.location.pathname.split("/")[2];
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+
+      setUserId(localStorage.getItem("userId"))
+    
+    }
+    if(userId){
+      onSnapshot(
+          query(collection(db, `users`), where("tag", "==", profile_tag)),
+          (snapshot) => {
+              onSnapshot(
+                  query(collection(db, `users`), where("userId", "==", userId)),
+                  (snapshot) => {
+                      let following = snapshot.docs[0].data().following
+                      console.log(following)
+                      setFollowing(following)
+                  }
+              )
+          }
+      )
+    }
+  }, [userId])
 
   useEffect(() => {
     onSnapshot(
@@ -53,6 +77,41 @@ const Profile = () => {
     );
     update();
   }
+
+  const followUser = async (account) => {
+    console.log(account)
+    onSnapshot(
+      query(
+        collection(db, `users`), where("userId", "==", userId)
+      ),
+      async (snapshot) => {
+        await updateDoc(doc(db, "users", snapshot.docs[0].id), {
+          following: [...following, account.userId]
+        })
+        setFollowing([...following, account.userId])
+      }
+    )
+  }
+
+  const unfollowUser = async (account) => {
+    await updateDoc(doc(db, "users", userId), {
+      following: following.filter((id) => id!== account.userId)
+    })
+    setFollowing(following.filter((id) => id!== account.userId))
+    onSnapshot(
+      query(
+        collection(db, `users`), where("userId", "==", userId)
+      ),
+      async (snapshot) => {
+        
+    await updateDoc(doc(db, "users", snapshot.docs[0].id), {
+      following: following.filter((id) => id!== account.userId)
+      })
+      setFollowing(following.filter((id) => id!== account.userId))
+      }
+    )
+  }
+
   const [hasMounted, setHasMounted] = React.useState(false);
   React.useEffect(() => {
     setHasMounted(true);
@@ -76,6 +135,49 @@ const Profile = () => {
             <img src={profile_user.userImg} alt={`${profile_user.username}'s profile`} className="profile-image" />
             <h2 className="profile-name">{profile_user.username}</h2>
             <p className="profile-tag">{profile_user.tag}</p>
+            <div className='post_action_bar'>
+              {profile_user.userId === userId ? (
+                <div
+                className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
+                onClick={() => router.push(`/settings/${profile_tag}`)}
+              >
+                Edit Profile
+              </div>
+              ) :
+                <div
+                  className="ml-auto px-3 py-2 rounded-lg bg-green-600 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/chat/${userId}/${profile_user.userId}`);
+                  }}
+                >
+                  Chat
+                </div>
+              }
+              {profile_user.userId === userId ? (
+                null
+              ) : following.includes(profile_user.userId) ? (
+                <div
+                  className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    unfollowUser(profile_user);
+                  }}
+                >
+                  Unfollow
+                </div>
+              ) : (
+                <div
+                  className="ml-3 px-3 py-2 rounded-lg bg-blue-400 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    followUser(account);
+                  }}
+                >
+                  Follow
+                </div>
+              )}
+            </div>
           </div>
       
           {posts.map((post) => {
