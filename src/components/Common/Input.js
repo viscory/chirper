@@ -86,6 +86,7 @@ const sendPost = async () => {
       likes: [],
       dislikes: [],
       timestamp: serverTimestamp(),
+      views: 0,
       isSPAM: isSPAM,
       isNSFW: isNSFW
     })

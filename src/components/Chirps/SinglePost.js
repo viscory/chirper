@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { BsArrowLeft } from "react-icons/bs"
 import Input from '../Common/Input'
 import Post from './Post'
-import { onSnapshot, collection, query, orderBy, doc, where } from "firebase/firestore";
+import { updateDoc, onSnapshot, collection, query, getDoc, doc, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useRouter } from 'next/router';
 import Comment from './Comment';
@@ -14,27 +14,42 @@ const SinglePost = () => {
     const [comments, setComments] = useState([])
     const [user, setUser] = useState(null)
 
-    useEffect(() =>{
-            if(window !== "undefined"){
-                onSnapshot(query(collection(db, `posts`), where("id", "==", window.location.pathname.split('/')[2])), 
-                    (snapshot) => {
-                        setPost(snapshot.docs[0].data())
-                        onSnapshot(query(
-                            collection(db, "posts", snapshot.docs[0].data().id, "replies")),
-                            (snapshot) => {
-                                const replies = snapshot.docs.map((doc) => doc.data())
-                                setComments(replies)
-                            }
-                        )
-                    }
-                )  
-            }
-        }
-    , [])
+    const incrementViews = async (postData) => {
+        await updateDoc(doc(db, "posts", postData.id), {
+          views: postData.views + 1,
+        })
+      }
 
-    // useEffect(() => {
-    //     setComments(post.comments)
-    // }, [comments, post])
+    useEffect(() => {
+        if (window !== "undefined") {
+          const fetchPostData = async () => {
+            const postId = window.location.pathname.split("/")[2];
+            const postData = await getDoc(doc(db, "posts", postId));
+            if (postData.exists()) {
+              const postObj = postData.data();
+              setPost(postObj);
+              incrementViews(postObj);
+            }
+          };
+      
+          fetchPostData();
+        }
+      }, []);
+      
+      useEffect(() => {
+        if (post) {
+          const unsubscribe = onSnapshot(
+            query(collection(db, "posts", post.id, "replies")),
+            (snapshot) => {
+              const replies = snapshot.docs.map((doc) => doc.data());
+              setComments(replies);
+            }
+          );
+          return () => unsubscribe();
+        }
+      }, [post]);
+      
+
     return (
         <section className='w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
             <div className='sticky top-0 bg-black flex items-center gap-4 font-medium text-[20px] px-4 py-2'>
