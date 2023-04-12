@@ -1,0 +1,23 @@
+.profile-header {
+  @apply flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 py-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+.profile-image {
+  @apply w-24 h-24 rounded-full object-cover mb-4;
+}
+
+.profile-name {
+  @apply text-2xl font-bold text-black dark:text-white mb-2;
+}
+
+.profile-tag {
+  @apply text-lg text-gray-500 dark:text-gray-300;
+}
+
+.message-container {
+  @apply flex justify-center items-center min-h-screen;
+}
+
+.message-text {
+  @apply text-2xl font-bold text-black dark:text-white;
+}
