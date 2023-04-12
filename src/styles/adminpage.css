@@ -1,7 +1,8 @@
 .admin_title {
     @apply text-2xl font-bold;
-}
-
-.admin_subtitle {
+  }
+  
+  .admin_subtitle {
     @apply text-lg font-normal;
-}
+  }
+  
