@@ -44,11 +44,11 @@
 }
 
 .blurred_content {
-    @apply filter blur-[10px] opacity-50;
+    @apply filter blur-[50px] opacity-50;
 }
 
 .warning_msg {
-    @apply relative mt-0 p-4 text-center bg-white dark:bg-black rounded-lg;
+    @apply gap-3 relative mt-0 p-4 text-center bg-white dark:bg-black rounded-lg;
 }
 
 .warning_msg p {
