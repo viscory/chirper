@@ -28,8 +28,9 @@ const EmailLogin = () => {
                 ),
                 (snapshot: any) => {
                   localStorage.setItem('userId', res.user.uid)
-                  localStorage.setItem('username', snapshot.docs[0].data().tag)
+                  localStorage.setItem('username', snapshot.docs[0].data().username)
                   localStorage.setItem('tag', snapshot.docs[0].data().tag)
+                  localStorage.setItem('userImg', snapshot.docs[0].data().userImg)
                 }
               )
             router.push('/')
