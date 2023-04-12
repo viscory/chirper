@@ -1,5 +1,5 @@
 .profile-header {
-  @apply flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 py-4 border-b border-gray-200 dark:border-gray-700;
+  @apply flex flex-col items-center justify-center bg-gray-100 dark:bg-slate-800 py-4 border-b border-gray-200 dark:border-gray-700;
 }
 
 .profile-image {

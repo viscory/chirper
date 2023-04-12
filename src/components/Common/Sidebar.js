@@ -42,7 +42,7 @@ const Sidebar = () => {
         localStorage.clear();
         signOut({callbackUrl: '/login'})
       }}>
-        <img src="https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg" alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
+        <img src={localStorage.userImg} alt="" className='h-10 w-10 rounded-full xl:mr-2.5'/>
         <div className='hidden xl:inline leading-5'>
           <h4 className='font-bold text-black dark:text-white'>{localStorage.getItem('username')}</h4>
           <h4 className='text-[#6e767d]'>@{localStorage.getItem('tag')}</h4>
