@@ -1,27 +1,21 @@
-import { signIn } from 'next-auth/react'
 import React from 'react'
 import Head from 'next/head'
-import { BsTwitter } from 'react-icons/bs'
+import { GiEgyptianBird } from 'react-icons/gi'
 import { AiOutlineMail } from 'react-icons/ai'
-import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
 
 const Login = () => {
-
   const router = useRouter()
 
-  // const googleSignin = () => {
-  //   signIn('google', {callbackUrl: '/'});
-  // }
   const emailSignin = () => {
-    router.push("/login")
+    router.push('/login')
   }
-  const [hasMounted, setHasMounted] = React.useState(false);
+  const [hasMounted, setHasMounted] = React.useState(false)
   React.useEffect(() => {
-    setHasMounted(true);
-  }, []);
+    setHasMounted(true)
+  }, [])
   if (!hasMounted) {
-    return null;
+    return null
   }
   return (
     <>
@@ -32,7 +26,7 @@ const Login = () => {
     </Head>
     <div className='grid grid-col-2'>
       <div className='login_background'>
-        <BsTwitter className='text-white text-[200px]'/>
+        <GiEgyptianBird className='text-white text-[200px]'/>
       </div>
       <div className='absolute bottom-20 flex left-0 right-0 mx-auto'>
         {/* <div className='google_sign_in_button' onClick={() => googleSignin()}>
