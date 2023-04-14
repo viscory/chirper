@@ -1,11 +1,11 @@
-import { BiDotsHorizontalRounded } from "react-icons/bi"
-import { AiOutlineHeart, AiFillHeart, AiOutlineShareAlt } from "react-icons/ai"
-import { HiOutlineSwitchHorizontal } from "react-icons/hi"
-import { BsBarChart, BsTrash, BsChatDots } from "react-icons/bs"
-import Moment from "react-moment";
+import { BiDotsHorizontalRounded } from 'react-icons/bi'
+import { AiOutlineHeart, AiOutlineShareAlt } from 'react-icons/ai'
+import { BsBarChart, BsChatDots } from 'react-icons/bs'
+import Moment from 'react-moment'
+import React from 'react'
 
-function Comment({ comment, ownerTag }) {
-    return (
+function Comment ({ comment, ownerTag }) {
+  return (
         <div className="comment_container">
             <img
                 src={comment?.userImg}
@@ -20,10 +20,10 @@ function Comment({ comment, ownerTag }) {
                                 {comment?.username}
                             </h4>
                             <span className="ml-1.5 text-sm sm:text-[15px]">
-                                @{comment?.tag}{" "}
+                                @{comment?.tag}{' '}
                             </span>
-                        </div>{" "}
-                        ·{" "}
+                        </div>{' '}
+                        ·{' '}
                         <span className="hover:underline text-sm sm:text-[15px]">
                             <Moment fromNow>{comment?.timestamp?.toDate()}</Moment>
                         </span>
@@ -35,13 +35,13 @@ function Comment({ comment, ownerTag }) {
                         </p>
                     </div>
                     <div className="icon group flex-shrink-0">
-                        <BiDotsHorizontalRounded className="h-5 text-[#6e767d] group-hover:text-[#1d9bf0]" />
+                        <BiDotsHorizontalRounded className="h-5 text-[#6e767d] group-hover:text-[#ab4f56]" />
                     </div>
                 </div>
 
                 <div className="text-[#6e767d] flex justify-between w-10/12">
                     <div className="icon group">
-                        <BsChatDots className="h-5 group-hover:text-[#1d9bf0]" />
+                        <BsChatDots className="h-5 group-hover:text-[#ab4f56]" />
                     </div>
 
                     <div className="flex items-center space-x-1 group">
@@ -52,15 +52,15 @@ function Comment({ comment, ownerTag }) {
                     </div>
 
                     <div className="icon group">
-                        <AiOutlineShareAlt className="h-5 group-hover:text-[#1d9bf0]" />
+                        <AiOutlineShareAlt className="h-5 group-hover:text-[#ab4f56]" />
                     </div>
                     <div className="icon group">
-                        <BsBarChart className="h-5 group-hover:text-[#1d9bf0]" />
+                        <BsBarChart className="h-5 group-hover:text-[#ab4f56]" />
                     </div>
                 </div>
             </div>
         </div>
-    );
+  )
 }
 
-export default Comment;
+export default Comment
