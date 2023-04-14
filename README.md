@@ -5,17 +5,10 @@ A Typescript Twitter-clone made to fulfill the project requirement for CSCI3100 
 
 ## Deployment
 
-To deploy the project's frontend run
+To run this project locally
 
 ```bash
-  cd client
-  npm start
+  npm run dev
 ```
 
-To deploy the project's backend run
-
-```bash
-  cd server
-  npm start
-```
 

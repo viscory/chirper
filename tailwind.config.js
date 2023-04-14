@@ -7,8 +7,12 @@ module.exports = {
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
-    extend: {},
+    borderColor: (theme) => ({
+      ...theme('colors'),
+      'custom-gray': 'rgb(83, 100, 113)',
+    }),
   },
   plugins: [],
 }
