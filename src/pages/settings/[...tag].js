@@ -6,18 +6,22 @@ import Settings from '@/components/Chirps/Settings'
 import { AppContext } from '@/contexts/AppContext'
 import Trending from '@/components/Common/Trending'
 
-//boilerplate
+// Component for the settings page
 const SettingsPage = () => {
   const [appContext] = useContext(AppContext)
 
+  // Set mount flag to true after component has mounted
   const [hasMounted, setHasMounted] = React.useState(false)
   React.useEffect(() => {
     setHasMounted(true)
   }, [])
+
+  // If component has not yet mounted, return null
   if (!hasMounted) {
     return null
   }
 
+  // Return the main content of the settings page
   return (
     <div>
       <Head>
@@ -26,14 +30,14 @@ const SettingsPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className='relative max-w-[1400px] mx-auto'>
-          <Sidebar/>
-          <div className='flex gap-6'>
-            <div className='sm:ml-20 xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
-              <Settings />
-            </div>
-            <Trending />
+        <Sidebar/>
+        <div className='flex gap-6'>
+          <div className='sm:ml-20 xl:ml-[340px] w-[600px] min-h-screen border-r border-gray-400 text-white py-2'>
+            <Settings />
           </div>
-        </main>
+          <Trending />
+        </div>
+      </main>
     </div>
   )
 }
