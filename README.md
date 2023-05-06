@@ -6,7 +6,7 @@ Chirper is a full-stack clone of Twitter reimplemented completely in Next.JS. To
 
 =============
 
-###Running the project
+### Running the project
 
 1. Clone the project from here
 
@@ -47,7 +47,65 @@ npm install <package-name> //avoid using "yarn install ..." to avoid package cla
 
 =============
 
-###Demo
+### Directory structure 
+
+├── components
+│   ├── Chirps (components related to a chirp made by a user
+│   │   ├── Comment.js
+│   │   ├── Feed.js
+│   │   ├── Post.js
+│   │   ├── Profile.js
+│   │   ├── Settings.js
+│   │   └── SinglePost.js
+│   ├── Common # components related to the sidebars in the feedpage
+│   │   ├── Input.js
+│   │   ├── Modal.js
+│   │   ├── Sidebar.js
+│   │   ├── SidebarLink.js
+│   │   ├── ThemeButton.js
+│   │   ├── Trending.js
+│   │   └── TrendingList.js
+│   ├── Login.js # the login page
+│   └── users # the admin user list
+│       └── userList.js
+├── contexts # boilerplate
+│   └── AppContext.js
+├── firebase.js # boilerplate
+├── pages
+│   ├── admin.js # admin verification
+│   ├── api
+│   │   ├── auth
+│   │   │   └── [...nextauth].js
+│   │   └── hello.ts
+│   ├── _app.tsx # boilerplate
+│   ├── chat
+│   │   └── [...id].tsx # talkjs configuration
+│   ├── chirps
+│   │   └── [...pid].js # boilerplate
+│   ├── _document.tsx
+│   ├── index.tsx # home page/ boilerplate
+│   ├── login.tsx # login flow
+│   ├── profile
+│   │   └── [...tag].js # boilerplate
+│   ├── search
+│   │   └── [id].js # search functionality
+│   ├── settings
+│   │   └── [...tag].js # boilerplate
+│   └── signup.tsx
+└── styles # style sheets for different components and html elements
+    ├── adminpage.css
+    ├── common.css
+    ├── feedpage.css
+    ├── globals.css
+    ├── login.css
+    ├── profile.css
+    └── settings.css
+
+15 directories, 37 files
+
+=============
+
+### Demo
 1. Prior to starting the project demo, go to you device console and clear you localStorage to ensure you start the project from stratch.
 2. Sign up for a new account: go to /signup, lets create the account for demo,
     username: demo
