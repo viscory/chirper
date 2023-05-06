@@ -1,26 +1,26 @@
-import React, { useState, useContext } from 'react'
-import { BsImage } from 'react-icons/bs'
-import { AiOutlineClose, AiOutlineAlignLeft, AiOutlineMeh, AiOutlineCalendar, AiOutlineVerticalAlignBottom } from 'react-icons/ai'
-import { AppContext } from '@/contexts/AppContext'
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
-import { addDoc, collection, doc, serverTimestamp, updateDoc, setDoc, arrayUnion } from 'firebase/firestore'
-import { db, storage } from '../../firebase'
-import { getDownloadURL, ref, uploadString } from 'firebase/storage'
-import { AkismetClient } from 'akismet-api'
+import React, { useState, useContext } from 'react' // Import React library and useState and useContext hooks
+import { BsImage } from 'react-icons/bs' // Import the BsImage icon from react-icons/bs package
+import { AiOutlineClose, AiOutlineAlignLeft, AiOutlineMeh, AiOutlineCalendar, AiOutlineVerticalAlignBottom } from 'react-icons/ai' // Import several icons from react-icons/ai package
+import { AppContext } from '@/contexts/AppContext' // Import the AppContext context
+import data from '@emoji-mart/data' // Import emoji data from the emoji-mart package
+import Picker from '@emoji-mart/react' // Import the Emoji Picker component from the emoji-mart package
+import { addDoc, collection, doc, serverTimestamp, updateDoc, setDoc, arrayUnion } from 'firebase/firestore' // Import several functions from the Firebase Firestore library
+import { db, storage } from '../../firebase' // Import the Firebase database and storage instances
+import { getDownloadURL, ref, uploadString } from 'firebase/storage' // Import several functions from the Firebase storage library
+import { AkismetClient } from 'akismet-api' // Import the AkismetClient class from the akismet-api package
 
-//the actual input box through which users can input tweets
-//the user can also select if they want their post to be nsfw and therefore, blurred, or not
+// Define a React component called Input
 const Input = ({ user }) => {
-  const [loading, setLoading] = useState(false)
-  const [input, setInput] = useState('')
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [showEmojis, setShowEmojis] = useState(false)
-  const [appContext, setAppContext] = useContext(AppContext)
-  const [get_ip, setIp] = useState()
-  const [isNSFW, setIsNSFW] = useState(false)
-  const [isSPAM, setIsSPAM] = useState(false)
-  const userId = localStorage.getItem('userId')
+  const [loading, setLoading] = useState(false) // Initialize a state variable called loading
+  const [input, setInput] = useState('') // Initialize a state variable called input
+  const [selectedFile, setSelectedFile] = useState(null) // Initialize a state variable called selectedFile
+  const [showEmojis, setShowEmojis] = useState(false) // Initialize a state variable called showEmojis
+  const [appContext, setAppContext] = useContext(AppContext) // Retrieve the app context using the useContext hook
+  const [get_ip, setIp] = useState() // Initialize a state variable called get_ip
+  const [isNSFW, setIsNSFW] = useState(false) // Initialize a state variable called isNSFW
+  const [isSPAM, setIsSPAM] = useState(false) // Initialize a state variable called isSPAM
+  const userId = localStorage.getItem('userId') // Retrieve the user id from the local storage
+
   const addImageToPost = (e) => {
     const reader = new FileReader()
     if (e.target.files[0]) {
@@ -30,6 +30,7 @@ const Input = ({ user }) => {
       setSelectedFile(readerEvent.target.result)
     }
   }
+
   const addEmoji = (e) => {
     const sym = e.unified.split('-')
     const codesArray = []
@@ -37,11 +38,12 @@ const Input = ({ user }) => {
     const emoji = String.fromCodePoint(...codesArray)
     setInput(input + emoji)
   }
+
   const key = '8ae38d485caa'
   const blog = 'https://zepto.page'
   const client = new AkismetClient({ key, blog })
-  //we are using our groupmate's blog's spam detected to blacklist IPs to our server
 
+  // Define an async function called getIp that retrieves the IP address of the user
   const getIp = async () => {
     // Connect ipapi.co with fetch()
     const response = await fetch('https://ipapi.co/json/')
@@ -113,6 +115,7 @@ const Input = ({ user }) => {
     setShowEmojis(false)
   }
 
+  // Render the component's UI
   return (
     <div className={`flex mt-4 px-4 ${loading && 'opacity-60'}`}>
       <div className='grid grid-cols-[48px,1fr] gap-4'>
@@ -190,4 +193,5 @@ const Input = ({ user }) => {
   )
 }
 
+// Export the Input component as the default export
 export default Input
