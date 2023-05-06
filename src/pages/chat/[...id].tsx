@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 import Talk from 'talkjs'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 
+//we are using talkjs to simulate messaging between our users
+// a majority of the code is from the actual documentation of talkJS' website
 export default function ChatRoom () {
   const chatboxEl = useRef<HTMLDivElement | null>(null)
   const [talkLoaded, markTalkLoaded] = useState(false)

@@ -5,6 +5,7 @@ import SinglePost from '@/components/Chirps/SinglePost'
 import { AppContext } from '@/contexts/AppContext'
 import Trending from '@/components/Common/Trending'
 
+//boilerplate
 const PostPage = () => {
   const [appContext] = useContext(AppContext)
 

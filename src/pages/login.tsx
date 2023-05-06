@@ -4,6 +4,9 @@ import Head from 'next/head'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../firebase'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
+
+//login page to retrieve details from the user and check that against out dp
+//and also setting these values to cache
 const EmailLogin = () => {
   const router = useRouter()
   const [email, setEmail] = useState('')

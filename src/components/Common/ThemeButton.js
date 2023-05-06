@@ -2,6 +2,7 @@ import { useTheme } from 'next-themes'
 import { HiOutlineSun, HiMoon } from 'react-icons/hi'
 import React from 'react'
 
+//the light/dark mode toggler
 const ThemeButton = () => {
   const { theme, setTheme } = useTheme()
   const [hasMounted, setHasMounted] = React.useState(false)

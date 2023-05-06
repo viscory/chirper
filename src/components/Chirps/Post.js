@@ -10,7 +10,9 @@ import { useRouter } from 'next/router'
 import { collection, deleteDoc, doc, onSnapshot, query, updateDoc, addDoc, where } from 'firebase/firestore'
 import numeral from 'numeral'
 
+//component for each chirp on feed
 const Post = ({ post }) => {
+  //state functions to use react hooks 
   const [dislikes, setDislikes] = useState([])
   const [disliked, setDisliked] = useState(false)
   const [likes, setLikes] = useState([])
@@ -26,6 +28,7 @@ const Post = ({ post }) => {
     setLikes(post.likes)
     setDisliked(post.dislikes.includes(userId))
     setDislikes(post.dislikes)
+    //using firebase to make changes to the feed's DOM for any update
     if (post.id) {
       onSnapshot(query(
         collection(db, 'posts', post.id, 'replies')),
@@ -49,6 +52,7 @@ const Post = ({ post }) => {
     }
   }, [])
 
+  //func to actually like a post
   const likePost = async () => {
     let updatedLikes = likes
     let updatedLiked = liked
@@ -101,6 +105,7 @@ const Post = ({ post }) => {
     setCommentModal(true)
   }
 
+  //func to actually retweet a post
   const retweetPost = async () => {
     const docRef = await addDoc(collection(db, 'posts'), {
       ...post,

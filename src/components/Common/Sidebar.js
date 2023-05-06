@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 
 import SidebarLink from './SidebarLink'
 
+ //the sidebar where the user can select different options
 const Sidebar = () => {
   const router = useRouter()
   const userTag = localStorage.getItem('tag')

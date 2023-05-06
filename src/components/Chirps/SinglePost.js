@@ -12,12 +12,14 @@ const SinglePost = () => {
   const [comments, setComments] = useState([])
   const [user, setUser] = useState(null)
 
+  // incrementing views for a post if a users seen it
   const incrementViews = async (postData) => {
     await updateDoc(doc(db, 'posts', postData.id), {
       views: postData.views + 1
     })
   }
 
+  // loading a single post 
   useEffect(() => {
     if (window !== 'undefined') {
       const fetchPostData = async () => {

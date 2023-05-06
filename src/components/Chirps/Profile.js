@@ -16,6 +16,7 @@ const Profile = () => {
   const [userId, setUserId] = useState('')
   const profile_tag = window.location.pathname.split('/')[2]
 
+  //getting userID from cache, not very secure
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setUserId(localStorage.getItem('userId'))
@@ -26,6 +27,7 @@ const Profile = () => {
     if (userId) {
       setUserId(localStorage.getItem('userId'))
 
+      //getting number of following users from firestore using userId
       onSnapshot(
         query(collection(db, 'users'), where('userId', '==', userId)),
         (snapshot) => {
@@ -61,6 +63,7 @@ const Profile = () => {
     )
   }, [])
 
+  //func to update a single chirp made by the user
   const updatePost = (singlePost) => {
     const update = onSnapshot(
       query(
@@ -78,6 +81,7 @@ const Profile = () => {
     update()
   }
 
+  //func to actually follow the user
   const followUser = async (account) => {
     console.log(userObjectId)
     await updateDoc(doc(db, 'users', userObjectId), {
@@ -85,12 +89,14 @@ const Profile = () => {
     })
   }
 
+  //func to unfollow a user
   const unfollowUser = async (account) => {
     await updateDoc(doc(db, 'users', userObjectId), {
       following: following.filter((id) => id !== account.userId)
     })
   }
 
+  //checking if has mounted
   const [hasMounted, setHasMounted] = React.useState(false)
   React.useEffect(() => {
     setHasMounted(true)
@@ -178,6 +184,7 @@ const Profile = () => {
       </div>
   )}
 
+    //loading icon
     {!profileUser && !dataFetched && (
       <div className="message-container">
         <h2 className="message-text">Loading...</h2>

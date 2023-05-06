@@ -7,6 +7,7 @@ import Trending from '@/components/Common/Trending'
 
 import { useRouter } from 'next/router'
 
+//home page, basically
 export default function Home () {
   const router = useRouter()
   const [appContext] = useContext(AppContext)

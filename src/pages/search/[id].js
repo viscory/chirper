@@ -6,6 +6,7 @@ import { onSnapshot, collection, query, where, doc, updateDoc, orderBy } from 'f
 import { db } from '@/firebase' 
 import { useRouter } from 'next/router'
 
+//our implementation to be able to search for users
 export default function UserSearch () {
   const [result, setResult] = useState([])
   const [following, setFollowing] = useState([])
@@ -14,6 +15,7 @@ export default function UserSearch () {
   const router = useRouter()
   const searchKeyWord = window.location.pathname.split('/')[2]
 
+  //we actually lcase the search query then match it, we used regex before but it felt too unreadable
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setUserId(localStorage.getItem('userId'))
@@ -48,6 +50,7 @@ export default function UserSearch () {
     }
   }, [result])
 
+  //after searching for users we give them the option to interact with the user too
   const followUser = async (account) => {
     console.log(userObjectId)
     await updateDoc(doc(db, 'users', userObjectId), {

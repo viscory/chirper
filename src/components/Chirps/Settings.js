@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { BsArrowLeft } from 'react-icons/bs'
 import { db } from '@/firebase'
 
+//settings page to allow user to make changes to their email profile photo etc.
 const Settings = () => {
   const router = useRouter()
   const [userObjectId, setUserObjectId] = useState('')
@@ -42,16 +43,19 @@ const Settings = () => {
     setUser({ ...user, [e.target.name]: e.target.value })
   }
 
+  //check unique 
   const isUnique = async (field, value) => {
     const result = await getDocs(query(collection(db, 'users'), where(field, '==', value)))
     return result.empty
   }
 
+  //getting user data
   const fetchUserData = async (userId) => {
     const userSnapshot = await getDoc(doc(db, 'users', userId))
     return userSnapshot.data()
   }
 
+  //saving settings data
   const saveSettings = async () => {
     if (user) {
       let canUpdate = true

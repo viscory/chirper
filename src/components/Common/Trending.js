@@ -2,6 +2,7 @@ import React from 'react'
 import { FiSearch } from 'react-icons/fi'
 import TrendingList from './TrendingList'
 
+//hit the search endpoint if user searchers for anything otherwise ignore
 const Trending = () => {
   const proceedSearch = (e) => {
     if (e.keyCode === 13) {

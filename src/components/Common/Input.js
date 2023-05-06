@@ -9,6 +9,8 @@ import { db, storage } from '../../firebase'
 import { getDownloadURL, ref, uploadString } from 'firebase/storage'
 import { AkismetClient } from 'akismet-api'
 
+//the actual input box through which users can input tweets
+//the user can also select if they want their post to be nsfw and therefore, blurred, or not
 const Input = ({ user }) => {
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
@@ -38,6 +40,7 @@ const Input = ({ user }) => {
   const key = '8ae38d485caa'
   const blog = 'https://zepto.page'
   const client = new AkismetClient({ key, blog })
+  //we are using our groupmate's blog's spam detected to blacklist IPs to our server
 
   const getIp = async () => {
     // Connect ipapi.co with fetch()

@@ -4,6 +4,7 @@ import { GiEgyptianBird } from 'react-icons/gi'
 import { AiOutlineMail } from 'react-icons/ai'
 import { useRouter } from 'next/router'
 
+//login page
 const Login = () => {
   const router = useRouter()
 

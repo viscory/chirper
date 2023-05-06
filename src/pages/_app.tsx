@@ -9,6 +9,7 @@ import 'nprogress/nprogress.css'
 
 import Router from 'next/router'
 
+//boilerplate
 export default function App ({ Component, pageProps: { ...pageProps } }: AppProps) {
   const [hasMounted, setHasMounted] = React.useState(false)
   React.useEffect(() => {

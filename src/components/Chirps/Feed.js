@@ -9,6 +9,7 @@ const Feed = () => {
   const [posts, setPosts] = useState([])
   const [user, setUser] = useState(null)
 
+  //getting list of userIDs the user follows to use to collect their chirps
   useEffect(() => {
     onSnapshot(
       query(

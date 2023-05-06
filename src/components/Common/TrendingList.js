@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import React from 'react'
 
+//loading trending tweet topics, is hardcode unfortunately
 const TrendingList = ({ title, category }) => {
   return (
         <div className='mt-4 flex items-center'>

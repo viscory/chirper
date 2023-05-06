@@ -5,6 +5,9 @@ import Sidebar from '../components/Common/Sidebar'
 import Trending from '../components/Common/Trending'
 import { onSnapshot, collection, query, deleteDoc, doc } from '@firebase/firestore'
 import { db } from '../firebase'
+
+//we needed to create some separate mechanisms for our admin login so users cannot accidentally enter it
+//we use an env variable to ensure that the userID of the admin cannot be changed
 const Admin = () => {
   const router = useRouter()
   const [hasMounted, setHasMounted] = React.useState(false)

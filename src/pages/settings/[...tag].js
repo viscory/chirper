@@ -6,6 +6,7 @@ import Settings from '@/components/Chirps/Settings'
 import { AppContext } from '@/contexts/AppContext'
 import Trending from '@/components/Common/Trending'
 
+//boilerplate
 const SettingsPage = () => {
   const [appContext] = useContext(AppContext)
 

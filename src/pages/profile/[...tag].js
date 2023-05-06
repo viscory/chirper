@@ -6,6 +6,7 @@ import Profile from '@/components/Chirps/Profile'
 import { AppContext } from '@/contexts/AppContext'
 import Trending from '@/components/Common/Trending'
 
+//boilerplate
 const ProfilePage = () => {
 
   const [appContext] = useContext(AppContext)

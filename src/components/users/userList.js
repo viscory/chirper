@@ -5,6 +5,7 @@ import { db } from '@/firebase'
 import Input from '../Common/Input'
 import { AppContext } from '@/contexts/AppContext'
 
+//list of users to be used by the admin to delete or message
 const UserList = () => {
   const [posts, setPosts] = useState([])
   const { data: session } = useSession()

@@ -6,6 +6,8 @@ import { auth, db } from '../firebase'
 
 import { addDoc, collection } from '@firebase/firestore'
 
+//account creation/signup, we store the details to firebase after validating/verifying them
+// we also set all of these values in localstorage so the user is immediately logged in
 const EmailSignup = () => {
   const [hasMounted, setHasMounted] = React.useState(false)
   const router = useRouter()
