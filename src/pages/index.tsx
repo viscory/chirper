@@ -7,20 +7,28 @@ import Trending from '@/components/Common/Trending'
 
 import { useRouter } from 'next/router'
 
-//home page, basically
+// Component for the home page
 export default function Home () {
   const router = useRouter()
   const [appContext] = useContext(AppContext)
+
+  // Set mount flag to true after component has mounted
   const [hasMounted, setHasMounted] = React.useState(false)
   React.useEffect(() => {
     setHasMounted(true)
   }, [])
+
+  // If component has not yet mounted, return null
   if (!hasMounted) {
     return null
   }
+
+  // If user is not logged in, redirect to login page
   if (hasMounted && localStorage.getItem('userId') == null) {
     router.push('/login')
   }
+
+  // Return the main content of the home page
   return (
     <div>
       <Head>
