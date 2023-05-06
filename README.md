@@ -126,8 +126,7 @@ user tutorial
 
 post location and map display
 
-# Credits
+### Credits
 
-Thank you to Mukit for working on the UML and bringing the laptop for demo
 Thank you to Matthew for handling the bulk of the software development
 -
