@@ -1,16 +1,18 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { onSnapshot, collection, query, orderBy, where, addDoc } from 'firebase/firestore'
-import { HiOutlineSparkles } from 'react-icons/hi'
-import { db } from '@/firebase'
-import Input from '../Common/Input'
-import { AppContext } from '@/contexts/AppContext'
+import React, { useEffect, useState, useContext } from 'react' // Import React library and several hooks
+import { onSnapshot, collection, query, orderBy, where, addDoc } from 'firebase/firestore' // Import several functions from the Firebase Firestore library
+import { HiOutlineSparkles } from 'react-icons/hi' // Import HiOutlineSparkles icon from react-icons/hi package
+import { db } from '@/firebase' // Import the Firebase database instance
+import Input from '../Common/Input' // Import the Input component
+import { AppContext } from '@/contexts/AppContext' // Import the AppContext context
 
-//list of users to be used by the admin to delete or message
+// Define a React component called UserList
 const UserList = () => {
-  const [posts, setPosts] = useState([])
-  const { data: session } = useSession()
-  const [appContext, setAppContext] = useContext(AppContext)
-  const [addNewUser, setAddNewUser] = useState(true)
+  const [posts, setPosts] = useState([]) // Initialize a state variable called posts
+  const { data: session } = useSession() // Retrieve the session data using the useSession hook
+  const [appContext, setAppContext] = useContext(AppContext) // Retrieve the app context using the useContext hook
+  const [addNewUser, setAddNewUser] = useState(true) // Initialize a state variable called addNewUser
+
+  // Use the useEffect hook to fetch data from the Firestore database
   useEffect(() => {
     onSnapshot(
       query(
@@ -43,34 +45,34 @@ const UserList = () => {
     )
   }, [])
 
+  // Return a JSX template that defines the user list page's layout
   return (
     <>
-
+      {/* Display a header with the Feed title and HiOutlineSparkles icon */}
       <div className='sticky top-0 bg-black flex justify-between font-medium text-xl px-4 py-2'>
         Feed
         <HiOutlineSparkles/>
       </div>
-      {
-        addNewUser == false
-          ? (
-          <div className="text-center text-xl">
+
+      {/* If there is no user, display a welcome message and a Start button */}
+      {addNewUser == false ? (
+        <div className="text-center text-xl">
           <div className="">Welcome to Chirper!</div>
           <div className="px-3 py-1 bg-green-800 rounded-3xl w-fit mx-auto mt-2" onClick={() => addUserToDB()}>Start</div>
-          </div>
-            )
-          : (
-          <>
+        </div>
+      ) : (
+        // Otherwise, display an input component and a list of posts
+        <>
           <Input className=''/>
           {posts.map((post) => {
             return (
-            <div>hi</div>
+              <div>hi</div>
             )
           })}
         </>
-            )
-      }
+      )}
     </>
   )
 }
 
-export default UserList
+export default UserList // Export the UserList component as the default export
