@@ -5,14 +5,15 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../firebase'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 
-//login page to retrieve details from the user and check that against out dp
-//and also setting these values to cache
+// Component for user login
 const EmailLogin = () => {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [valid, setValid] = useState(false)
+
+  // Check if email and password are present to enable the login button
   useEffect(() => {
     if (email && password) {
       setValid(true)
@@ -21,6 +22,7 @@ const EmailLogin = () => {
     }
   }, [email, password])
 
+  // Function to login user and set user data to local storage
   const loginUser = async () => {
     signInWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
@@ -43,13 +45,18 @@ const EmailLogin = () => {
       })
   }
 
+  // Set mount flag to true after component has mounted
   const [hasMounted, setHasMounted] = React.useState(false)
   React.useEffect(() => {
     setHasMounted(true)
   }, [])
+
+  // If component has not yet mounted, return null
   if (!hasMounted) {
     return null
   }
+
+  // Return the login form
   return (
         <>
         <Head>
@@ -82,4 +89,5 @@ const EmailLogin = () => {
         </>
   )
 }
+
 export default EmailLogin
