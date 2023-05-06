@@ -5,23 +5,31 @@ import { useEffect, useRef, useState } from 'react'
 import Talk from 'talkjs'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 
-//we are using talkjs to simulate messaging between our users
-// a majority of the code is from the actual documentation of talkJS' website
+// ChatRoom component for real-time user messaging
 export default function ChatRoom () {
+  // Ref for the chatbox container
   const chatboxEl = useRef<HTMLDivElement | null>(null)
+  // State to track if TalkJS is loaded
   const [talkLoaded, markTalkLoaded] = useState(false)
+  // Mark TalkJS as loaded when ready
   Talk.ready.then(() => { markTalkLoaded(true) })
 
+  // useEffect hook to initialize TalkJS chat
   useEffect(() => {
+    // Get user IDs from the URL
     const id1 = window.location.pathname.split('/')[2]
     const id2 = window.location.pathname.split('/')[3]
+
+    // Initialize chat if both user IDs are available and TalkJS is loaded
     if (id1 && id2 && talkLoaded) {
+      // Get user1 data from the database
       onSnapshot(
         query(
           collection(db, 'users'), where('userId', '==', id1)
         ),
         async (snapshot) => {
           const user1 = snapshot.docs[0].data()
+          // Get user2 data from the database
           onSnapshot(
             query(
               collection(db, 'users'), where('userId', '==', id2)
@@ -29,42 +37,44 @@ export default function ChatRoom () {
             async (snapshot) => {
               const user2 = snapshot.docs[0].data()
               if (talkLoaded) {
-                // Safe to use the SDK here
-                if (talkLoaded) {
-                  const currentUser = new Talk.User({
-                    id: user1.userId,
-                    name: user1.username,
-                    email: user1.email,
-                    photoUrl: 'https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg',
-                    welcomeMessage: 'Hello!',
-                    role: 'default'
-                  })
+                // Create TalkJS users
+                const currentUser = new Talk.User({
+                  id: user1.userId,
+                  name: user1.username,
+                  email: user1.email,
+                  photoUrl: 'https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg',
+                  welcomeMessage: 'Hello!',
+                  role: 'default'
+                })
 
-                  const otherUser = new Talk.User({
-                    id: user2.userId,
-                    name: user2.username,
-                    email: user2.email,
-                    photoUrl: 'https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg',
-                    welcomeMessage: 'Hello!',
-                    role: 'default'
-                  })
+                const otherUser = new Talk.User({
+                  id: user2.userId,
+                  name: user2.username,
+                  email: user2.email,
+                  photoUrl: 'https://www.sksales.com/wp-content/uploads/2016/12/Unknown-Placeholder-Portrait-20150724A.jpg',
+                  welcomeMessage: 'Hello!',
+                  role: 'default'
+                })
 
-                  const session = new Talk.Session({
-                    appId: 'tnvwPP6b',
-                    me: currentUser
-                  })
+                // Create TalkJS session
+                const session = new Talk.Session({
+                  appId: 'tnvwPP6b',
+                  me: currentUser
+                })
 
-                  const conversationId = Talk.oneOnOneId(currentUser, otherUser)
-                  const conversation = session.getOrCreateConversation(conversationId)
-                  conversation.setParticipant(currentUser)
-                  conversation.setParticipant(otherUser)
+                // Create TalkJS conversation
+                const conversationId = Talk.oneOnOneId(currentUser, otherUser)
+                const conversation = session.getOrCreateConversation(conversationId)
+                conversation.setParticipant(currentUser)
+                conversation.setParticipant(otherUser)
 
-                  const chatbox = session.createChatbox()
-                  chatbox.select(conversation)
-                  chatbox.mount(chatboxEl.current)
+                // Create and mount TalkJS chatbox
+                const chatbox = session.createChatbox()
+                chatbox.select(conversation)
+                chatbox.mount(chatboxEl.current)
 
-                  return () => { session.destroy() }
-                }
+                // Clean up on unmount
+                return () => { session.destroy() }
               }
             }
           )
@@ -72,6 +82,8 @@ export default function ChatRoom () {
       )
     }
   }, [talkLoaded])
+
+  // Render the chat room UI
   return (
     <div>
       <Head>
